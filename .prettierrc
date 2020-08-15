@@ -1,7 +1,6 @@
 {
 	"tabWidth": 2,
 	"useTabs": true,
-	"singleQuote": true,
   "endOfLine": "lf",
   "arrowParens": "avoid"
 }

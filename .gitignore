@@ -11,3 +11,6 @@ typings/
 .env.test
 build/
 dist/
+
+# Sensitive data
+src/secrets.ts

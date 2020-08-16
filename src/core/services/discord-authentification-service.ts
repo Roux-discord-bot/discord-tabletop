@@ -2,6 +2,7 @@ import { Client } from "discord.js";
 import _ from "lodash";
 import DiscordConfigService from "./discord-config-service";
 import DiscordConfigInterface from "../interfaces/discord-config-interface";
+import logger from "../utils/logger";
 
 export default class DiscordAuthentificationService {
 	private static instance: DiscordAuthentificationService;
@@ -20,15 +21,13 @@ export default class DiscordAuthentificationService {
 		return this.instance;
 	}
 
-	public login(): Client {
+	public login(): Promise<string> {
 		if (this.isAuthentificated())
 			throw new Error(`The client is already logged in !`);
 		this._client = new Client().on(`ready`, () => {
-			// eslint-disable-next-line no-console
-			console.log(`Client is logged in and ready!`);
+			logger.logEvent(`Ready`, `Client is logged in and ready!`);
 		});
-		this._client.login(this._config.DISCORD_TOKEN);
-		return this._client;
+		return this._client.login(this._config.DISCORD_TOKEN);
 	}
 
 	public logout(): void {

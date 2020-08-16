@@ -13,4 +13,4 @@ build/
 dist/
 
 # Sensitive data
-src/secrets.ts
+discord-config.ts

@@ -11,7 +11,7 @@
 	"main": "src/index.ts",
 	"scripts": {
 		"start": "ts-node-dev --respawn --transpile-only .",
-		"lint": "eslint 'src/**'",
+		"lint": "eslint src",
 		"lint:fix": "eslint --fix src",
 		"build": "echo \"Error: no build specified\" && exit 1",
 		"test": "jest --config jest-test.config.js",
@@ -28,6 +28,7 @@
 	"devDependencies": {
 		"@types/eslint": "^7.2.0",
 		"@types/jest": "^26.0.10",
+		"@types/lodash": "^4.14.159",
 		"@types/node": "^14.0.27",
 		"@types/prettier": "^2.0.2",
 		"@typescript-eslint/eslint-plugin": "^3.9.0",
@@ -48,6 +49,7 @@
 		"typescript": "^3.9.7"
 	},
 	"dependencies": {
-		"discord.js": "^12.3.0"
+		"discord.js": "^12.3.0",
+		"lodash": "^4.17.20"
 	}
 }

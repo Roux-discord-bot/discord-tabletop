@@ -3,7 +3,8 @@ import _ from "lodash";
 import chalk from "chalk";
 
 export function log(message: string, options?: chalk.Chalk): void {
-	if (!_.isNil(options)) console.log(options`${message}`);
+	if (!_.isNil(options))
+		console.log(`[${chalk.blueBright`INFO`}] ${options(message)}`);
 	else console.log(`[${chalk.blueBright`INFO`}] ${message}`);
 }
 
@@ -12,7 +13,7 @@ export function logEvent(event: string, message: string): void {
 }
 
 export function warn(message: string, options?: chalk.Chalk): void {
-	if (!_.isNil(options)) console.log(options`${message}`);
+	if (!_.isNil(options)) console.log(options`[WARN] ${message}`);
 	else console.log(chalk.bold.yellow`[WARN] ${message}`);
 }
 
@@ -23,7 +24,7 @@ export function warnEvent(event: string, message: string): void {
 }
 
 export function error(message: string, options?: chalk.Chalk): void {
-	if (!_.isNil(options)) console.log(options`${message}`);
+	if (!_.isNil(options)) console.log(options`[ERROR] ${message}`);
 	else console.log(chalk.bgRed.bold.black`[ERROR] ${message}`);
 }
 

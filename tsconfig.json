@@ -30,6 +30,6 @@
 			{ "transform": "ts-auto-mock/transformer", "cacheBetweenTests": false }
 		]
 	},
-	"include": ["./src/**/*.ts"],
+	"include": ["./src/**/*.ts", "./config.ts", "./jest.config.js"],
 	"exclude": ["./src/**/*.spec.ts"]
 }

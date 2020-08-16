@@ -30,6 +30,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
           node-version: ${{ matrix.node-version }}
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.12
     - name: Cache node_modules
       if: github.event_name == 'push' || github.event_name == 'pull_request'
       uses: actions/cache@v1

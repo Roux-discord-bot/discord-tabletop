@@ -25,7 +25,10 @@
 		"lib": ["es2018"],
 		"types": ["node", "jest"],
 		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"plugins": [
+			{ "transform": "ts-auto-mock/transformer", "cacheBetweenTests": false }
+		]
 	},
 	"include": ["./src/**/*.ts"],
 	"exclude": ["./src/**/*.spec.ts"]

@@ -1,3 +1,3 @@
-export default interface DiscordConfigInterface {
-	DISCORD_TOKEN: string;
+export default interface IDiscordConfig {
+	getDiscordToken(): string;
 }

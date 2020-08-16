@@ -1,6 +1,7 @@
 *.log
 npm-debug.log*
 coverage
+.cache-jest/
 *.lcov
 .npm
 node_modules/
@@ -11,6 +12,3 @@ typings/
 .env.test
 build/
 dist/
-
-# Sensitive data
-discord-config.ts

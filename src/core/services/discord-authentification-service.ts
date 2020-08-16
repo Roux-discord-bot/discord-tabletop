@@ -1,46 +1,38 @@
-import { Client } from "discord.js";
 import _ from "lodash";
+import { oneLine } from "common-tags";
 import DiscordConfigService from "./discord-config-service";
-import DiscordConfigInterface from "../interfaces/discord-config-interface";
+import DiscordClientService from "./discord-client-service";
 import logger from "../utils/logger";
 
-export default class DiscordAuthentificationService {
-	private static instance: DiscordAuthentificationService;
+export default class DiscordAuthenticationService {
+	private static _instance: DiscordAuthenticationService;
 
-	private _client: Client | undefined;
+	private _authenticated = false;
 
-	private _config: DiscordConfigInterface;
-
-	private constructor() {
-		this._config = DiscordConfigService.getInstance().config;
+	public static getInstance(): DiscordAuthenticationService {
+		if (_.isNil(DiscordAuthenticationService._instance))
+			DiscordAuthenticationService._instance = new DiscordAuthenticationService();
+		return DiscordAuthenticationService._instance;
 	}
 
-	public static getInstance(): DiscordAuthentificationService {
-		if (_.isNil(this.instance))
-			this.instance = new DiscordAuthentificationService();
-		return this.instance;
+	public async login(): Promise<unknown> {
+		const discordConfigService = DiscordConfigService.getInstance();
+		return DiscordClientService.getInstance()
+			.getClient()
+			.login(discordConfigService.getDiscordToken())
+			.then(() => {
+				this._authenticated = true;
+				logger.log(
+					oneLine`The bot is logging in, using : 
+					${discordConfigService.getSafeToPrintDiscordToken()}`
+				);
+			})
+			.catch(err => {
+				logger.error(`The bot could not log in, reason : ${err}`);
+			});
 	}
 
-	public login(): Promise<string> {
-		if (this.isAuthentificated())
-			throw new Error(`The client is already logged in !`);
-		this._client = new Client().on(`ready`, () => {
-			logger.logEvent(`Ready`, `Client is logged in and ready!`);
-		});
-		return this._client.login(this._config.DISCORD_TOKEN);
-	}
-
-	public logout(): void {
-		if (!this.isAuthentificated()) return;
-		this._client?.destroy();
-		this._client = undefined;
-	}
-
-	public isAuthentificated(): boolean {
-		return !_.isNil(this._client);
-	}
-
-	public get client(): Client | undefined {
-		return this._client;
+	public isAuthenticated(): boolean {
+		return this._authenticated;
 	}
 }

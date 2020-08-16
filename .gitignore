@@ -1,6 +1,7 @@
 *.log
 npm-debug.log*
 coverage
+.cache-jest/
 *.lcov
 .npm
 node_modules/

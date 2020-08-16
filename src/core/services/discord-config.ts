@@ -2,7 +2,7 @@ import IDiscordConfig from "../interfaces/discord-config-interface";
 
 const config: IDiscordConfig = {
 	getDiscordToken(): string {
-		return `TOKEN`;
+		return process.env.DISCORD_TOKEN ? process.env.DISCORD_TOKEN : `empty`;
 	},
 };
 

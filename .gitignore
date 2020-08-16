@@ -12,6 +12,3 @@ typings/
 .env.test
 build/
 dist/
-
-# Sensitive data
-# discord-config.ts

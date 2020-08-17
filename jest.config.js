@@ -28,7 +28,10 @@ module.exports = {
 	collectCoverageFrom: [`**/src/**/*`, `!**/node_modules/**`, `!**/vendor/**`],
 	coveragePathIgnorePatterns: [`/node_modules/`],
 	coverageDirectory: `coverage`,
-	testPathIgnorePatterns: [`/node_modules/`],
+	testPathIgnorePatterns: [
+		`/node_modules/`,
+		`/src/core/services/discord-authentification-service.*`,
+	],
 	moduleDirectories: [`./node_modules`],
 	moduleFileExtensions: [`js`, `json`, `ts`, `node`],
 	globals: {
@@ -38,4 +41,6 @@ module.exports = {
 	},
 	preset: `ts-jest/presets/js-with-ts`,
 	prettierPath: `prettier`,
+	timers: `fake`, // NEVER TOUCH THIS tests aren't broken anymore thanks to this
+	testTimeout: 5000,
 };

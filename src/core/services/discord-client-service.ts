@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { Client } from "discord.js";
-import logger from "../utils/logger";
 
 export default class DiscordClientService {
 	private static _instance: DiscordClientService;
@@ -16,16 +15,8 @@ export default class DiscordClientService {
 
 	public createClient(): Client {
 		this._client = new Client();
-		this.onReady();
 
 		return this._client;
-	}
-
-	public onReady(): void {
-		if (_.isNil(this._client)) return;
-		this._client.on(`ready`, () => {
-			logger.logEvent(`Ready`, `Client is logged in and ready!`);
-		});
 	}
 
 	public getClient(): Client {

@@ -38,4 +38,6 @@ module.exports = {
 	},
 	preset: `ts-jest/presets/js-with-ts`,
 	prettierPath: `prettier`,
+	timers: `fake`, // NEVER TOUCH THIS tests aren't broken anymore thanks to this
+	testTimeout: 5000,
 };

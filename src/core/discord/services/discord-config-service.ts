@@ -1,10 +1,10 @@
-/* eslint-disable class-methods-use-this */
 import _ from "lodash";
 import IDiscordConfig from "../interfaces/discord-config-interface";
-import discordConfig from "./discord-config";
 
 export default class DiscordConfigService implements IDiscordConfig {
 	private static _instance: DiscordConfigService;
+
+	public MISSING_TOKEN = `MISSING_TOKEN`;
 
 	public static getInstance(): DiscordConfigService {
 		if (_.isNil(DiscordConfigService._instance))
@@ -13,15 +13,19 @@ export default class DiscordConfigService implements IDiscordConfig {
 	}
 
 	public getDiscordToken(): string {
-		return discordConfig.getDiscordToken();
+		return process.env.DISCORD_TOKEN
+			? process.env.DISCORD_TOKEN
+			: this.MISSING_TOKEN;
 	}
 
 	public getSafeToPrintDiscordToken(): string {
-		const token = discordConfig.getDiscordToken();
-		const lastDotIndex = token.lastIndexOf(`.`) + 1;
+		const token = this.getDiscordToken();
+		if (token === this.MISSING_TOKEN) return token;
+		if (token === undefined) throw new Error(`Invalid token !`);
+		const firstDotIndex = token.indexOf(`.`) + 1;
 		return (
-			token.substring(0, lastDotIndex) +
-			token.substring(lastDotIndex).replace(/./g, `*`)
+			token.substring(0, firstDotIndex) +
+			token.substring(firstDotIndex).replace(/./g, `*`)
 		);
 	}
 }

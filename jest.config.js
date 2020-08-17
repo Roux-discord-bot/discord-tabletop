@@ -28,10 +28,7 @@ module.exports = {
 	collectCoverageFrom: [`**/src/**/*`, `!**/node_modules/**`, `!**/vendor/**`],
 	coveragePathIgnorePatterns: [`/node_modules/`],
 	coverageDirectory: `coverage`,
-	testPathIgnorePatterns: [
-		`/node_modules/`,
-		`/src/core/services/discord-authentification-service.*`,
-	],
+	testPathIgnorePatterns: [`/node_modules/`],
 	moduleDirectories: [`./node_modules`],
 	moduleFileExtensions: [`js`, `json`, `ts`, `node`],
 	globals: {

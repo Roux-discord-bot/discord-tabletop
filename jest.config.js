@@ -25,7 +25,11 @@ module.exports = {
 	coverageProvider: `v8`,
 	coverageReporters: [`json`, `text-summary`, `lcov`],
 	collectCoverage: false,
-	collectCoverageFrom: [`**/src/**/*`, `!**/node_modules/**`, `!**/vendor/**`],
+	collectCoverageFrom: [
+		`**/src/**/{!(*-interface.ts),}`,
+		`!**/node_modules/**`,
+		`!**/vendor/**`,
+	],
 	coveragePathIgnorePatterns: [`/node_modules/`],
 	coverageDirectory: `coverage`,
 	testPathIgnorePatterns: [`/node_modules/`],

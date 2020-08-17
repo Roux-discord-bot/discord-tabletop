@@ -13,9 +13,16 @@ export class DiscordConfigService implements IDiscordConfig {
 	}
 
 	public getDiscordToken(): string {
-		return process.env.DISCORD_TOKEN
-			? process.env.DISCORD_TOKEN
-			: this.MISSING_TOKEN;
+		const token = process.env.DISCORD_TOKEN;
+		if (
+			typeof token === `string` &&
+			!_.isEmpty(token) &&
+			!_.isNil(token) &&
+			token !== `undefined`
+		) {
+			return token;
+		}
+		return this.MISSING_TOKEN;
 	}
 
 	public getSafeToPrintDiscordToken(): string {

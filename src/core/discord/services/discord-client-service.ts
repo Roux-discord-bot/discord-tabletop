@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Client } from "discord.js";
 
-export default class DiscordClientService {
+export class DiscordClientService {
 	private static _instance: DiscordClientService;
 
 	private _client: Client | undefined = undefined;

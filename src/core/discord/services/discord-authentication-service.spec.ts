@@ -1,9 +1,9 @@
 import { Client } from "discord.js";
 import { createMock } from "ts-auto-mock";
 import logger from "../../../utils/logger";
-import DiscordAuthenticationService from "./discord-authentication-service";
-import DiscordClientService from "./discord-client-service";
-import DiscordConfigService from "./discord-config-service";
+import { DiscordAuthenticationService } from "./discord-authentication-service";
+import { DiscordClientService } from "./discord-client-service";
+import { DiscordConfigService } from "./discord-config-service";
 
 describe(`Discord Authentification Service`, (): void => {
 	let service: DiscordAuthenticationService;

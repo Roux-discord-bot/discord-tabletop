@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { createMock } from "ts-auto-mock";
-import DiscordClientService from "./discord-client-service";
+import { DiscordClientService } from "./discord-client-service";
 
 describe(`Discord Client Service`, () => {
 	let service: DiscordClientService;

@@ -15,11 +15,17 @@ export default class DiscordClientService {
 	}
 
 	public createClient(): Client {
-		this._client = new Client().on(`ready`, () => {
-			logger.logEvent(`Ready`, `Client is logged in and ready!`);
-		});
+		this._client = new Client();
+		this.onReady();
 
 		return this._client;
+	}
+
+	public onReady(): void {
+		if (_.isNil(this._client)) return;
+		this._client.on(`ready`, () => {
+			logger.logEvent(`Ready`, `Client is logged in and ready!`);
+		});
 	}
 
 	public getClient(): Client {

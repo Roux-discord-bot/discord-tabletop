@@ -1,8 +1,8 @@
 import _ from "lodash";
 import { oneLine } from "common-tags";
+import logger from "../../../utils/logger";
 import DiscordConfigService from "./discord-config-service";
 import DiscordClientService from "./discord-client-service";
-import logger from "../utils/logger";
 
 export default class DiscordAuthenticationService {
 	private static _instance: DiscordAuthenticationService;

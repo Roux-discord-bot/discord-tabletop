@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { createMock } from "ts-auto-mock";
-import logger from "../utils/logger";
+import logger from "../../../utils/logger";
 import DiscordAuthenticationService from "./discord-authentification-service";
 import DiscordClientService from "./discord-client-service";
 import DiscordConfigService from "./discord-config-service";
@@ -56,7 +56,7 @@ describe(`Discord Authentification Service`, (): void => {
 				.mockReturnValue(client);
 			discordConfigServiceGetDiscordTokenSpy = jest
 				.spyOn(discordConfigService, `getDiscordToken`)
-				.mockImplementation();
+				.mockReturnValue(`TEST_TOKEN`);
 		});
 
 		it(`should NOT be authenticated without login in`, async (): Promise<
@@ -81,7 +81,7 @@ describe(`Discord Authentification Service`, (): void => {
 
 			await service.login();
 
-			expect(discordConfigServiceGetDiscordTokenSpy).toHaveBeenCalledTimes(1);
+			expect(discordConfigServiceGetDiscordTokenSpy).toHaveBeenCalled();
 			expect(discordConfigServiceGetDiscordTokenSpy).toHaveBeenCalledWith();
 		});
 
@@ -93,7 +93,7 @@ describe(`Discord Authentification Service`, (): void => {
 			expect(loginMock).toHaveBeenCalledTimes(1);
 		});
 
-		describe(`- login was successful`, () => {
+		describe(`login was successful`, () => {
 			beforeEach(() => {
 				loginMock = jest.fn().mockResolvedValue(`success`);
 				client = createMock<Client>({
@@ -119,7 +119,7 @@ describe(`Discord Authentification Service`, (): void => {
 			});
 		});
 
-		describe(`- login was a failure`, () => {
+		describe(`login was a failure`, () => {
 			beforeEach(() => {
 				loginMock = jest.fn().mockRejectedValue(`error`);
 				client = createMock<Client>({

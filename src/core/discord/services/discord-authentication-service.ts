@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { oneLine } from "common-tags";
-import logger from "../../../utils/logger";
+import { LoggerService } from "../../../utils/logger/logger-service";
 import { DiscordConfigService } from "./discord-config-service";
 import { DiscordClientService } from "./discord-client-service";
 
@@ -22,13 +22,17 @@ export class DiscordAuthenticationService {
 			.login(discordConfigService.getDiscordToken())
 			.then(() => {
 				this._authenticated = true;
-				logger.log(
-					oneLine`The bot is logging in, using : 
-					${discordConfigService.getSafeToPrintDiscordToken()}`
-				);
+				LoggerService.getInstance().info({
+					context: `DiscordAuthenticationService`,
+					message: oneLine`The bot is logging in, using : 
+													${discordConfigService.getSafeToPrintDiscordToken()}`,
+				});
 			})
 			.catch(err => {
-				logger.error(`The bot could not log in, reason : ${err}`);
+				LoggerService.getInstance().error({
+					context: `DiscordAuthenticationService`,
+					message: `The bot could not log in, reason : ${err}`,
+				});
 			});
 	}
 

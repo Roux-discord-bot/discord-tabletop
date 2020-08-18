@@ -24,8 +24,7 @@ export class DiscordAuthenticationService {
 				this._authenticated = true;
 				LoggerService.getInstance().info({
 					context: `DiscordAuthenticationService`,
-					message: oneLine`The bot is logging in, using : 
-													${discordConfigService.getSafeToPrintDiscordToken()}`,
+					message: oneLine`The bot is logging in . . .`,
 				});
 			})
 			.catch(err => {

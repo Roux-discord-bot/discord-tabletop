@@ -112,7 +112,7 @@ describe(`Discord Authentification Service`, (): void => {
 				expect(service.isAuthenticated()).toBeTruthy();
 			});
 
-			it(`should call a success log`, async (): Promise<void> => {
+			it(`should call an info log`, async (): Promise<void> => {
 				expect.assertions(1);
 
 				await service.login();

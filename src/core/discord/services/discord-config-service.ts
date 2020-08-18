@@ -24,15 +24,4 @@ export class DiscordConfigService implements IDiscordConfig {
 		}
 		return this.MISSING_TOKEN;
 	}
-
-	public getSafeToPrintDiscordToken(): string {
-		const token = this.getDiscordToken();
-		if (token === this.MISSING_TOKEN) return token;
-		if (token === undefined) throw new Error(`Invalid token !`);
-		const firstDotIndex = token.indexOf(`.`) + 1;
-		return (
-			token.substring(0, firstDotIndex) +
-			token.substring(firstDotIndex).replace(/./g, `*`)
-		);
-	}
 }

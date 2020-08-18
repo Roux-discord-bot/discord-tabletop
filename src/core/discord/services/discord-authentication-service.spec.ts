@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { createMock } from "ts-auto-mock";
-import logger from "../../../utils/logger";
+import { LoggerService } from "../../../utils/logger/logger-service";
 import { DiscordAuthenticationService } from "./discord-authentication-service";
 import { DiscordClientService } from "./discord-client-service";
 import { DiscordConfigService } from "./discord-config-service";
@@ -9,10 +9,12 @@ describe(`Discord Authentification Service`, (): void => {
 	let service: DiscordAuthenticationService;
 	let discordClientService: DiscordClientService;
 	let discordConfigService: DiscordConfigService;
+	let loggerService: LoggerService;
 
 	beforeEach((): void => {
 		discordClientService = DiscordClientService.getInstance();
 		discordConfigService = DiscordConfigService.getInstance();
+		loggerService = LoggerService.getInstance();
 	});
 
 	describe(`::getInstance()`, () => {
@@ -38,7 +40,7 @@ describe(`Discord Authentification Service`, (): void => {
 
 		let discordClientServiceGetClientSpy: jest.SpyInstance;
 		let discordConfigServiceGetDiscordTokenSpy: jest.SpyInstance;
-		let loggerLogSpy: jest.SpyInstance;
+		let loggerInfoSpy: jest.SpyInstance;
 		let loggerErrorSpy: jest.SpyInstance;
 		let loginMock: jest.Mock;
 
@@ -49,8 +51,8 @@ describe(`Discord Authentification Service`, (): void => {
 				login: loginMock,
 			});
 
-			loggerLogSpy = jest.spyOn(logger, `log`).mockImplementation();
-			loggerErrorSpy = jest.spyOn(logger, `error`).mockImplementation();
+			loggerInfoSpy = jest.spyOn(loggerService, `info`).mockImplementation();
+			loggerErrorSpy = jest.spyOn(loggerService, `error`).mockImplementation();
 			discordClientServiceGetClientSpy = jest
 				.spyOn(discordClientService, `getClient`)
 				.mockReturnValue(client);
@@ -115,7 +117,7 @@ describe(`Discord Authentification Service`, (): void => {
 
 				await service.login();
 
-				expect(loggerLogSpy).toHaveBeenCalledTimes(1);
+				expect(loggerInfoSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 

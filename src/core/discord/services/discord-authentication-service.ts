@@ -15,7 +15,11 @@ export class DiscordAuthenticationService {
 		return DiscordAuthenticationService._instance;
 	}
 
-	public async login(): Promise<unknown> {
+	public async init(): Promise<void> {
+		return this.login();
+	}
+
+	public async login(): Promise<void> {
 		const discordConfigService = DiscordConfigService.getInstance();
 		return DiscordClientService.getInstance()
 			.getClient()
@@ -32,6 +36,7 @@ export class DiscordAuthenticationService {
 					context: `DiscordAuthenticationService`,
 					message: `The bot could not log in, reason : ${err}`,
 				});
+				return Promise.reject(new Error(err));
 			});
 	}
 

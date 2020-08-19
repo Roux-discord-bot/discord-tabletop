@@ -107,17 +107,17 @@ describe(`Discord Authentification Service`, (): void => {
 			it(`should be authenticated`, async (): Promise<void> => {
 				expect.assertions(1);
 
-				await service.login();
-
-				expect(service.isAuthenticated()).toBeTruthy();
+				await service.login().then(() => {
+					expect(service.isAuthenticated()).toBeTruthy();
+				});
 			});
 
 			it(`should call an info log`, async (): Promise<void> => {
 				expect.assertions(1);
 
-				await service.login();
-
-				expect(loggerInfoSpy).toHaveBeenCalledTimes(1);
+				await service.login().then(() => {
+					expect(loggerInfoSpy).toHaveBeenCalledTimes(1);
+				});
 			});
 		});
 
@@ -134,16 +134,77 @@ describe(`Discord Authentification Service`, (): void => {
 				expect.assertions(2);
 
 				expect(service.isAuthenticated()).toBeFalsy();
-				await service.login();
-				expect(service.isAuthenticated()).toBeFalsy();
+				await service.login().catch(() => {
+					expect(service.isAuthenticated()).toBeFalsy();
+				});
 			});
 
 			it(`should call an error log`, async (): Promise<void> => {
 				expect.assertions(1);
 
-				await service.login();
+				await service.login().catch(() => {
+					expect(loggerErrorSpy).toHaveBeenCalledTimes(1);
+				});
+			});
 
-				expect(loggerErrorSpy).toHaveBeenCalledTimes(1);
+			it(`should return a rejected Promise`, async (): Promise<void> => {
+				expect.assertions(1);
+
+				await service.login().catch(err => {
+					expect(err).toStrictEqual(expect.any(Error));
+				});
+			});
+		});
+	});
+
+	describe(`:init()`, () => {
+		let serviceLoginSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			service = new DiscordAuthenticationService();
+			serviceLoginSpy = jest.spyOn(service, `login`).mockResolvedValue();
+		});
+
+		it(`should call login() once`, async () => {
+			expect.assertions(2);
+
+			await service.init();
+
+			expect(serviceLoginSpy).toHaveBeenCalledTimes(1);
+			expect(serviceLoginSpy).toHaveBeenCalledWith();
+		});
+
+		describe(`when login() returned Promise is rejected`, () => {
+			beforeEach(() => {
+				serviceLoginSpy = jest
+					.spyOn(service, `login`)
+					.mockRejectedValue(`error`);
+			});
+
+			it(`should return a rejected Promise`, async () => {
+				expect.assertions(1);
+
+				await service.init().catch(err => {
+					expect(err).toStrictEqual(`error`);
+				});
+			});
+		});
+
+		describe(`when login() returned Promise is resolved`, () => {
+			beforeEach(() => {
+				serviceLoginSpy = jest.spyOn(service, `login`).mockResolvedValue();
+			});
+
+			it(`should not Throw`, async () => {
+				expect.assertions(1);
+
+				await expect(service.init()).resolves.not.toThrow();
+			});
+
+			it(`should resolves`, async () => {
+				expect.assertions(1);
+
+				await expect(service.init()).resolves.toBe(undefined);
 			});
 		});
 	});

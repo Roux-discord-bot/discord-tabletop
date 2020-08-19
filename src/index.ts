@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
-import { DiscordAuthenticationService } from "./core/discord/services/discord-authentication-service";
+import { DiscordService } from "./core/discord/discord-service";
 
 dotenv.config();
 
-const discord = DiscordAuthenticationService.getInstance();
-discord.login();
+DiscordService.getInstance().start();

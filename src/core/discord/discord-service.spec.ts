@@ -18,7 +18,7 @@ describe(`Discord Service`, () => {
 	});
 
 	describe(`::getInstance()`, () => {
-		it(`should create a DiscordAuthentication service`, (): void => {
+		it(`should create a Discord service`, (): void => {
 			expect.assertions(1);
 
 			service = DiscordService.getInstance();
@@ -26,7 +26,7 @@ describe(`Discord Service`, () => {
 			expect(service).toStrictEqual(expect.any(DiscordService));
 		});
 
-		it(`should return the created DiscordAuthentication service`, (): void => {
+		it(`should return the created Discord service`, (): void => {
 			expect.assertions(1);
 
 			const result = DiscordService.getInstance();

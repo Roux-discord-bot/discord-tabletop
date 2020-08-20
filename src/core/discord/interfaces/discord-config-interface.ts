@@ -1,3 +1,3 @@
 export interface IDiscordConfig {
-	getDiscordToken(): string;
+	events: string;
 }

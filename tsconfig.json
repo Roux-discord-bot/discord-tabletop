@@ -22,7 +22,7 @@
 		"strict": true,
 		"target": "ES6",
 		"typeRoots": ["node_modules/@types", "node_modules/@types/", "types"],
-		"lib": ["es2018"],
+		"lib": ["ESNext", "ES2019"],
 		"types": ["node", "jest"],
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,

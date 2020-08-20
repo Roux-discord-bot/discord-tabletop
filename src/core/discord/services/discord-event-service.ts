@@ -15,28 +15,28 @@ export class DiscordEventService {
 		return DiscordEventService._instance;
 	}
 
-	private eventHandlers: Array<DiscordEventHandler>;
-
-	constructor() {
-		this.eventHandlers = [];
-	}
-
-	public addEventHandler(eventHandler: DiscordEventHandler): void {
-		this.eventHandlers.push(eventHandler);
-	}
-
-	public async fillEventHandlers(eventsPath: string): Promise<void> {
-		return recursiveReadDir(eventsPath).then(files => {
-			files.forEach(filePath => {
+	public async fillEventHandlers(
+		eventsPath: string
+	): Promise<DiscordEventHandler[]> {
+		const files = await recursiveReadDir(eventsPath);
+		return files
+			.map(async filePath => {
 				return this._importClassesFromPath(filePath);
+			})
+			.reduce(async (promiseAccumulator, promiseCurrent) => {
+				const accumulator = await promiseAccumulator;
+				const current = await promiseCurrent;
+				accumulator.push(...current);
+				return promiseAccumulator;
 			});
-		});
 	}
 
-	private _importClassesFromPath(filePath: string) {
-		import(filePath)
-			.then(clazz => {
-				this._addAllClassesInFileToEventHandlers(clazz);
+	private async _importClassesFromPath(
+		filePath: string
+	): Promise<DiscordEventHandler[]> {
+		return import(filePath)
+			.then(file => {
+				return this._getClassesInFile(file);
 			})
 			.catch(err => {
 				LoggerService.getInstance().error({
@@ -47,20 +47,19 @@ export class DiscordEventService {
 			});
 	}
 
-	private _addAllClassesInFileToEventHandlers(clazz: {
+	private _getClassesInFile(file: {
 		[key: string]: Constructable<DiscordEventHandler>;
-	}) {
-		Object.keys(clazz).forEach(key => {
-			const eventHandler = new clazz[key]();
-			this.addEventHandler(eventHandler);
+	}): DiscordEventHandler[] {
+		return Object.keys(file).map(eventHandler => {
+			return new file[eventHandler]();
 		});
 	}
 
 	public async init(eventsPath: string): Promise<void> {
-		await this.fillEventHandlers(eventsPath);
+		const eventHandlers = await this.fillEventHandlers(eventsPath);
 		return new Promise((resolve, reject) => {
 			const client = DiscordClientService.getInstance().getClient();
-			this.eventHandlers.forEach(value => {
+			eventHandlers.forEach(value => {
 				switch (value.getAction()) {
 					case `on`:
 						this._on(client, value);

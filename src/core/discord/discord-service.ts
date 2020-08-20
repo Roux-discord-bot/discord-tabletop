@@ -15,10 +15,7 @@ export class DiscordService {
 		return DiscordService._instance;
 	}
 
-	private _config: IDiscordConfig;
-
 	public async start(config: IDiscordConfig): Promise<void> {
-		this._config = config;
 		return Promise.all([
 			DiscordEventService.getInstance().init(config.events),
 			DiscordAuthenticationService.getInstance().init(),

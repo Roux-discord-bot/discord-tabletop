@@ -21,10 +21,10 @@ describe(`Recursive read dir`, () => {
 		corePath = `/${corePath}`;
 	});
 
-	it(`should return array`, () => {
+	it(`should return array`, async () => {
 		expect.assertions(0);
 
-		const result = recursiveReadDir(corePath);
+		const result = await recursiveReadDir(corePath);
 
 		result.forEach(val => {
 			console.log(val);

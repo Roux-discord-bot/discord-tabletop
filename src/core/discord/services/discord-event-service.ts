@@ -1,8 +1,8 @@
-import { Client, Constructable } from "discord.js";
 import _ from "lodash";
+import { Client, Constructable } from "discord.js";
 import { LoggerService } from "../../../utils/logger/logger-service";
 import { recursiveReadDir } from "../../functions/recursive-read-dir";
-import { DiscordEventHandler } from "../events/discord-event-handler";
+import { DiscordEventHandler } from "../features/discord-event-handler";
 import { DiscordClientService } from "./discord-client-service";
 
 export class DiscordEventService {
@@ -18,7 +18,8 @@ export class DiscordEventService {
 	public async fillEventHandlers(
 		eventsPath: string
 	): Promise<DiscordEventHandler[]> {
-		const files = await recursiveReadDir(eventsPath);
+		const files = recursiveReadDir(eventsPath);
+		if (files.length === 0) return Promise.resolve([]);
 		return files
 			.map(async filePath => {
 				return this._importClassesFromPath(filePath);
@@ -36,7 +37,7 @@ export class DiscordEventService {
 	): Promise<DiscordEventHandler[]> {
 		return import(filePath)
 			.then(file => {
-				return this._getClassesInFile(file);
+				return this._instantiateGivenClasses(file);
 			})
 			.catch(err => {
 				LoggerService.getInstance().error({
@@ -47,18 +48,18 @@ export class DiscordEventService {
 			});
 	}
 
-	private _getClassesInFile(file: {
+	private _instantiateGivenClasses(classes: {
 		[key: string]: Constructable<DiscordEventHandler>;
 	}): DiscordEventHandler[] {
-		return Object.keys(file).map(eventHandler => {
-			return new file[eventHandler]();
+		return Object.keys(classes).map(cname => {
+			return new classes[cname]();
 		});
 	}
 
 	public async init(eventsPath: string): Promise<void> {
-		const eventHandlers = await this.fillEventHandlers(eventsPath);
+		const client = DiscordClientService.getInstance().getClient();
+		const eventHandlers = (await this.fillEventHandlers(eventsPath)) || [];
 		return new Promise((resolve, reject) => {
-			const client = DiscordClientService.getInstance().getClient();
 			eventHandlers.forEach(value => {
 				switch (value.getAction()) {
 					case `on`:

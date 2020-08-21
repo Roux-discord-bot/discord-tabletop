@@ -1,33 +1,42 @@
 import { recursiveReadDir } from "./recursive-read-dir";
 
 describe(`Recursive read dir`, () => {
-	let corePath: string;
+	describe(`when given path is valid`, () => {
+		let validPath: string;
 
-	beforeAll(() => {
-		let coreReached = false;
-		corePath = __dirname
-			.split(`/`)
-			.map(value => {
-				if (coreReached) return ``;
-				if (value === `core`) {
-					coreReached = true;
-				}
-				return value;
-			})
-			.join(` `)
-			.trim()
-			.split(` `)
-			.join(`/`);
-		corePath = `/${corePath}`;
+		beforeAll(() => {
+			const last = __dirname.lastIndexOf(`/`);
+			validPath = __dirname.substring(0, last);
+		});
+
+		it(`should return an array`, () => {
+			expect.assertions(1);
+
+			const result = recursiveReadDir(validPath);
+
+			expect(result).toStrictEqual(expect.any(Array));
+		});
+
+		it(`should NOT throw an Error`, () => {
+			expect.assertions(0);
+
+			try {
+				recursiveReadDir(validPath);
+			} catch (err) {
+				fail();
+			}
+		});
 	});
 
-	it(`should return array`, async () => {
-		expect.assertions(0);
+	describe(`when given path is invalid`, () => {
+		it(`should throw an Error`, () => {
+			expect.assertions(1);
 
-		const result = await recursiveReadDir(corePath);
-
-		result.forEach(val => {
-			console.log(val);
+			try {
+				recursiveReadDir(`invalid-path`);
+			} catch (err) {
+				expect(err).toStrictEqual(expect.any(Error));
+			}
 		});
 	});
 });

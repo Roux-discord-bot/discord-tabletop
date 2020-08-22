@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { createMock } from "ts-auto-mock";
-import * as dependency from "../../functions/recursive-read-dir";
+import { LoggerService } from "../../../utils/logger/logger-service";
 import {
 	DiscordEventHandler,
 	EventAction,
@@ -10,11 +10,13 @@ import { DiscordEventService } from "./discord-event-service";
 
 describe(`DiscordEventService`, () => {
 	let service: DiscordEventService;
+	let loggerService: LoggerService;
 	let discordClientService: DiscordClientService;
 
 	beforeAll(() => {
-		discordClientService = DiscordClientService.getInstance();
 		service = new DiscordEventService();
+		loggerService = LoggerService.getInstance();
+		discordClientService = DiscordClientService.getInstance();
 	});
 
 	describe(`::getInstance()`, () => {
@@ -35,117 +37,19 @@ describe(`DiscordEventService`, () => {
 		});
 	});
 
-	describe(`:fillEventHandlers`, () => {
-		let _importClassesFromPathSpy: jest.SpyInstance;
-
-		beforeEach(() => {
-			jest.spyOn(dependency, `recursiveReadDir`).mockReturnValue([``]);
-			_importClassesFromPathSpy = jest
-				.spyOn<DiscordEventService, any>(service, `_importClassesFromPath`)
-				.mockReturnValue([``]);
-		});
-
-		it(`should call recursiveReadDir()`, async () => {
-			expect.assertions(1);
-
-			await service.fillEventHandlers(``);
-
-			expect(dependency.recursiveReadDir).toHaveBeenCalledTimes(1);
-		});
-
-		it(`should call _importClassesFromPath()`, async () => {
-			expect.assertions(1);
-
-			await service.fillEventHandlers(``);
-
-			expect(_importClassesFromPathSpy).toHaveBeenCalledTimes(1);
-		});
-
-		it(`should return an array`, async () => {
-			expect.assertions(1);
-
-			const result = await service.fillEventHandlers(``);
-
-			expect(result).toStrictEqual(expect.any(Array));
-		});
-
-		describe(`when recursiveReadDir return an empty array`, () => {
-			beforeEach(() => {
-				jest.spyOn(dependency, `recursiveReadDir`).mockReturnValue([]);
-			});
-
-			it(`should not throw`, async () => {
-				expect.assertions(1);
-
-				const promise = service.fillEventHandlers(``);
-
-				await expect(promise).resolves.not.toThrow();
-			});
-
-			it(`should resolve an empty array`, async () => {
-				expect.assertions(1);
-
-				const promise = service.fillEventHandlers(``);
-
-				await expect(promise).resolves.toStrictEqual([]);
-			});
-
-			it(`should not call _importClassesFromPath()`, async () => {
-				expect.assertions(1);
-
-				await service.fillEventHandlers(``);
-
-				expect(_importClassesFromPathSpy).toHaveBeenCalledTimes(0);
-			});
-		});
-
-		describe(`when recursiveReadDir return a non-empty array`, () => {
-			beforeEach(() => {
-				jest
-					.spyOn(dependency, `recursiveReadDir`)
-					.mockReturnValue([`.`, `.`, `.`]);
-			});
-
-			it(`should not throw`, async () => {
-				expect.assertions(1);
-
-				const promise = service.fillEventHandlers(``);
-
-				await expect(promise).resolves.not.toThrow();
-			});
-
-			it(`should resolve a non-empty array`, async () => {
-				expect.assertions(2);
-
-				await service.fillEventHandlers(``).then(result => {
-					expect(result).toStrictEqual(expect.any(Array));
-					expect(result.length).toBeGreaterThan(0);
-				});
-			});
-
-			it(`should call _importClassesFromPath()`, async () => {
-				expect.assertions(1);
-
-				await service.fillEventHandlers(``);
-
-				expect(_importClassesFromPathSpy).toHaveBeenCalled();
-			});
-		});
-	});
-
 	describe(`:init()`, () => {
+		let loggerServiceInfoSpy: jest.SpyInstance;
 		let discordClientServiceGetClientSpy: jest.SpyInstance;
-		let serviceFillEventHandlersSpy: jest.SpyInstance;
 		let examplePath: string;
 
 		beforeEach(() => {
+			loggerServiceInfoSpy = jest
+				.spyOn(loggerService, `info`)
+				.mockImplementation();
 			discordClientServiceGetClientSpy = jest
 				.spyOn(discordClientService, `getClient`)
 				.mockReturnValue(createMock<Client>());
-			serviceFillEventHandlersSpy = jest
-				.spyOn(service, `fillEventHandlers`)
-				.mockImplementation();
-			examplePath = ``;
+			examplePath = __dirname;
 		});
 
 		it(`should call DiscordClientService:getClient()`, async () => {
@@ -157,15 +61,6 @@ describe(`DiscordEventService`, () => {
 			expect(discordClientServiceGetClientSpy).toHaveBeenCalledWith();
 		});
 
-		it(`should call DiscordEventService:fillEventHandlers()`, async () => {
-			expect.assertions(2);
-
-			await service.init(examplePath);
-
-			expect(serviceFillEventHandlersSpy).toHaveBeenCalledTimes(1);
-			expect(serviceFillEventHandlersSpy).toHaveBeenCalledWith(examplePath);
-		});
-
 		it(`should return a Promise`, () => {
 			expect.assertions(1);
 
@@ -174,31 +69,7 @@ describe(`DiscordEventService`, () => {
 			expect(promise).toStrictEqual(expect.any(Promise));
 		});
 
-		describe(`when fillEventHandlers return an empty array`, () => {
-			beforeEach(() => {
-				serviceFillEventHandlersSpy = jest
-					.spyOn(service, `fillEventHandlers`)
-					.mockResolvedValue([]);
-			});
-
-			it(`should not throw`, async () => {
-				expect.assertions(1);
-
-				const promise = service.init(examplePath);
-
-				await expect(promise).resolves.not.toThrow();
-			});
-
-			it(`should resolves`, async () => {
-				expect.assertions(1);
-
-				const promise = service.init(examplePath);
-
-				await expect(promise).resolves.toBe(undefined);
-			});
-		});
-
-		describe(`when fillEventHandlers return a non-empty array`, () => {
+		describe(`when the scanDir return a non-empty array`, () => {
 			let discordEventMock: DiscordEventHandler;
 			let discordEventHandlerGetEventSpy: jest.SpyInstance;
 			let discordEventHandlerGetActionSpy: jest.SpyInstance;
@@ -211,13 +82,21 @@ describe(`DiscordEventService`, () => {
 				discordEventHandlerGetActionSpy = jest
 					.spyOn(discordEventMock, `getAction`)
 					.mockReturnValue(`on`);
-				serviceFillEventHandlersSpy = jest
-					.spyOn(service, `fillEventHandlers`)
-					.mockResolvedValue([discordEventMock]);
 				discordClientServiceGetClientSpy = jest.spyOn(
 					discordEventMock,
 					`getEvent`
 				);
+				jest
+					.spyOn<DiscordEventService, any>(service, `_fillEventHandlers`)
+					.mockResolvedValue([discordEventMock]);
+			});
+
+			it(`should call LoggerService:info()`, async () => {
+				expect.assertions(1);
+
+				await service.init(examplePath);
+
+				expect(loggerServiceInfoSpy).toHaveBeenCalledTimes(1);
 			});
 
 			it(`should not throw`, async () => {
@@ -283,7 +162,7 @@ describe(`DiscordEventService`, () => {
 					expect.assertions(2);
 
 					await service.init(examplePath).catch(() => {
-						expect(discordEventHandlerGetActionSpy).toHaveBeenCalledTimes(2);
+						expect(discordEventHandlerGetActionSpy).toHaveBeenCalledTimes(1);
 						expect(discordEventHandlerGetActionSpy).toHaveBeenCalledWith();
 					});
 				});

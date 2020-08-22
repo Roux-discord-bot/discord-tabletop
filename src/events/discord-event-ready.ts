@@ -3,7 +3,7 @@ import { DiscordEventHandler } from "../core/discord/features/discord-event-hand
 
 export class DiscordEventReady extends DiscordEventHandler {
 	constructor() {
-		super(`DiscordEventReady`, `ready`);
+		super(`ready`);
 	}
 
 	public handleEvent(): void {

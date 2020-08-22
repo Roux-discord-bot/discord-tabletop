@@ -15,11 +15,11 @@ export class DiscordEventService {
 		return DiscordEventService._instance;
 	}
 
-	public async fillEventHandlers(
+	private async _fillEventHandlers(
 		eventsPath: string
 	): Promise<DiscordEventHandler[]> {
 		const files = recursiveReadDir(eventsPath);
-		if (files.length === 0) return Promise.resolve([]);
+		if (files.length === 0) return [];
 		return files
 			.map(async filePath => {
 				return this._importClassesFromPath(filePath);
@@ -37,7 +37,9 @@ export class DiscordEventService {
 	): Promise<DiscordEventHandler[]> {
 		return import(filePath)
 			.then(file => {
-				return this._instantiateGivenClasses(file);
+				return this._instantiateGivenClasses(file).filter(clazz => {
+					return clazz instanceof DiscordEventHandler;
+				});
 			})
 			.catch(err => {
 				LoggerService.getInstance().error({
@@ -58,42 +60,31 @@ export class DiscordEventService {
 
 	public async init(eventsPath: string): Promise<void> {
 		const client = DiscordClientService.getInstance().getClient();
-		const eventHandlers = (await this.fillEventHandlers(eventsPath)) || [];
+		const eventHandlers = (await this._fillEventHandlers(eventsPath)) || [];
+		return this._registerEachEventHandlersOnClient(eventHandlers, client);
+	}
+
+	private _registerEachEventHandlersOnClient(
+		eventHandlers: DiscordEventHandler[],
+		client: Client
+	): void | PromiseLike<void> {
 		return new Promise((resolve, reject) => {
-			eventHandlers.forEach(value => {
-				switch (value.getAction()) {
-					case `on`:
-						this._on(client, value);
-						break;
-					case `once`:
-						this._once(client, value);
-						break;
-					case `off`:
-						this._off(client, value);
-						break;
-					default:
-						reject(new Error(`Invalid action : ${value.getAction()}`));
+			eventHandlers.forEach(eventHandler => {
+				const action = eventHandler.getAction();
+				if (typeof client[action] === `function`) {
+					const event = eventHandler.getEvent();
+					client[action](event, (...args) => {
+						eventHandler.handleEvent(args);
+					});
+					LoggerService.getInstance().info({
+						context: eventHandler.constructor.name,
+						message: `Registered event handler on '${event}' with action [${action}]`,
+					});
+				} else {
+					reject(new Error(`Invalid action : ${action}`));
 				}
 			});
 			resolve();
-		});
-	}
-
-	private _on(client: Client, value: DiscordEventHandler): void {
-		client.on(value.getEvent(), (...args) => {
-			value.handleEvent(args);
-		});
-	}
-
-	private _once(client: Client, value: DiscordEventHandler): void {
-		client.once(value.getEvent(), (...args) => {
-			value.handleEvent(args);
-		});
-	}
-
-	private _off(client: Client, value: DiscordEventHandler): void {
-		client.off(value.getEvent(), (...args) => {
-			value.handleEvent(args);
 		});
 	}
 }

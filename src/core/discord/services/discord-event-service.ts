@@ -2,7 +2,10 @@ import _ from "lodash";
 import { Client, Constructable } from "discord.js";
 import { LoggerService } from "../../../utils/logger/logger-service";
 import { recursiveReadDir } from "../../functions/recursive-read-dir";
-import { DiscordEventHandler } from "../features/discord-event-handler";
+import {
+	ClientListenerActionType,
+	DiscordEventHandler,
+} from "../features/discord-event-handler";
 import { DiscordClientService } from "./discord-client-service";
 
 export class DiscordEventService {
@@ -70,21 +73,36 @@ export class DiscordEventService {
 	): void | PromiseLike<void> {
 		return new Promise((resolve, reject) => {
 			eventHandlers.forEach(eventHandler => {
-				const action = eventHandler.getAction();
-				if (typeof client[action] === `function`) {
-					const event = eventHandler.getEvent();
-					client[action](event, (...args) => {
-						eventHandler.handleEvent(args);
-					});
-					LoggerService.getInstance().info({
-						context: eventHandler.constructor.name,
-						message: `Registered event handler on '${event}' with action [${action}]`,
-					});
+				const action: ClientListenerActionType = eventHandler.getAction();
+				if (this._clientHasFunctionForAction(client, action)) {
+					this._registerEventHandlerOnClient(eventHandler, client, action);
 				} else {
 					reject(new Error(`Invalid action : ${action}`));
 				}
 			});
 			resolve();
+		});
+	}
+
+	private _clientHasFunctionForAction(
+		client: Client,
+		action: ClientListenerActionType
+	) {
+		return typeof client[action] === `function`;
+	}
+
+	private _registerEventHandlerOnClient(
+		eventHandler: DiscordEventHandler,
+		client: Client,
+		action: ClientListenerActionType
+	): void {
+		const event = eventHandler.getEvent();
+		client[action](event, (...args) => {
+			eventHandler.handleEvent(args);
+		});
+		LoggerService.getInstance().info({
+			context: eventHandler.constructor.name,
+			message: `Registered event handler on '${event}' with action [${action}]`,
 		});
 	}
 }

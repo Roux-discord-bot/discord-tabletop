@@ -3,7 +3,7 @@ import { createMock } from "ts-auto-mock";
 import { LoggerService } from "../../../utils/logger/logger-service";
 import {
 	DiscordEventHandler,
-	EventAction,
+	ClientListenerActionType,
 } from "../features/discord-event-handler";
 import { DiscordClientService } from "./discord-client-service";
 import { DiscordEventService } from "./discord-event-service";
@@ -129,7 +129,7 @@ describe(`DiscordEventService`, () => {
 				beforeEach(() => {
 					discordEventHandlerGetActionSpy = jest
 						.spyOn(discordEventMock, `getAction`)
-						.mockReturnValue(<EventAction>action);
+						.mockReturnValue(<ClientListenerActionType>action);
 				});
 
 				describe(`on action [${action}]`, () => {
@@ -147,7 +147,7 @@ describe(`DiscordEventService`, () => {
 				beforeEach(() => {
 					discordEventHandlerGetActionSpy = jest
 						.spyOn(discordEventMock, `getAction`)
-						.mockReturnValue(<EventAction>`invalid`);
+						.mockReturnValue(<ClientListenerActionType>`invalid`);
 				});
 
 				it(`should throw`, async () => {

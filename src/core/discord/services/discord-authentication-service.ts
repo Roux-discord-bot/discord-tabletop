@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { oneLine } from "common-tags";
 import { LoggerService } from "../../../utils/logger/logger-service";
 import { DiscordConfigService } from "./discord-config-service";
 import { DiscordClientService } from "./discord-client-service";
@@ -21,15 +20,15 @@ export class DiscordAuthenticationService {
 
 	public async login(): Promise<void> {
 		const discordConfigService = DiscordConfigService.getInstance();
+		LoggerService.getInstance().info({
+			context: `DiscordAuthenticationService`,
+			message: `The bot is logging in . . .`,
+		});
 		return DiscordClientService.getInstance()
 			.getClient()
 			.login(discordConfigService.getDiscordToken())
 			.then(() => {
 				this._authenticated = true;
-				LoggerService.getInstance().info({
-					context: `DiscordAuthenticationService`,
-					message: oneLine`The bot is logging in . . .`,
-				});
 			})
 			.catch(err => {
 				LoggerService.getInstance().error({

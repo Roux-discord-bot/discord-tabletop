@@ -1,7 +1,6 @@
 import _ from "lodash";
-import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
-export class DiscordConfigService implements IDiscordConfig {
+export class DiscordConfigService {
 	private static _instance: DiscordConfigService;
 
 	public MISSING_TOKEN = `MISSING_TOKEN`;

@@ -1,19 +1,24 @@
+import { createMock } from "ts-auto-mock";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordService } from "./discord-service";
+import { IDiscordConfig } from "./interfaces/discord-config-interface";
 import { DiscordAuthenticationService } from "./services/discord-authentication-service";
+import { DiscordEventService } from "./services/discord-event-service";
 
 describe(`Discord Service`, () => {
 	let service: DiscordService;
 	let discordAuthenticationService: DiscordAuthenticationService;
+	let discordEventService: DiscordEventService;
 	let loggerService: LoggerService;
 
 	beforeAll(() => {
 		discordAuthenticationService = DiscordAuthenticationService.getInstance();
+		discordEventService = DiscordEventService.getInstance();
 		loggerService = LoggerService.getInstance();
 	});
 
 	describe(`::getInstance()`, () => {
-		it(`should create a DiscordAuthentication service`, (): void => {
+		it(`should create a Discord service`, (): void => {
 			expect.assertions(1);
 
 			service = DiscordService.getInstance();
@@ -21,7 +26,7 @@ describe(`Discord Service`, () => {
 			expect(service).toStrictEqual(expect.any(DiscordService));
 		});
 
-		it(`should return the created DiscordAuthentication service`, (): void => {
+		it(`should return the created Discord service`, (): void => {
 			expect.assertions(1);
 
 			const result = DiscordService.getInstance();
@@ -34,6 +39,8 @@ describe(`Discord Service`, () => {
 		let loggerSuccessSpy: jest.SpyInstance;
 		let loggerErrorSpy: jest.SpyInstance;
 		let discordAuthenticationServiceInitSpy: jest.SpyInstance;
+		let discordEventServiceInitSpy: jest.SpyInstance;
+		let discordConfigMock: IDiscordConfig;
 
 		beforeEach(() => {
 			service = new DiscordService();
@@ -44,15 +51,26 @@ describe(`Discord Service`, () => {
 			discordAuthenticationServiceInitSpy = jest
 				.spyOn(discordAuthenticationService, `init`)
 				.mockResolvedValue();
+			discordEventServiceInitSpy = jest
+				.spyOn(discordEventService, `init`)
+				.mockResolvedValue();
+			discordConfigMock = createMock<IDiscordConfig>();
+		});
+
+		it(`should call DiscordEventService:init()`, async () => {
+			expect.assertions(1);
+
+			await service.start(discordConfigMock);
+
+			expect(discordEventServiceInitSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it(`should call DiscordAuthenticationService:init()`, async () => {
-			expect.assertions(2);
+			expect.assertions(1);
 
-			await service.start();
+			await service.start(discordConfigMock);
 
 			expect(discordAuthenticationServiceInitSpy).toHaveBeenCalledTimes(1);
-			expect(discordAuthenticationServiceInitSpy).toHaveBeenCalledWith();
 		});
 
 		describe(`when one Promise in :start() returns a reject`, () => {
@@ -66,7 +84,7 @@ describe(`Discord Service`, () => {
 			it(`should return a rejected Promise containing an Error(err)`, async () => {
 				expect.assertions(1);
 
-				await service.start().catch(err => {
+				await service.start(discordConfigMock).catch(err => {
 					expect(err).toStrictEqual(expect.any(Error));
 				});
 			});
@@ -74,7 +92,7 @@ describe(`Discord Service`, () => {
 			it(`should call LoggerService:error()`, async () => {
 				expect.assertions(1);
 
-				await service.start().catch(() => {
+				await service.start(discordConfigMock).catch(() => {
 					expect(loggerErrorSpy).toHaveBeenCalledTimes(1);
 				});
 			});
@@ -91,19 +109,19 @@ describe(`Discord Service`, () => {
 			it(`should not Throw`, async () => {
 				expect.assertions(1);
 
-				await expect(service.start()).resolves.not.toThrow();
+				await expect(service.start(discordConfigMock)).resolves.not.toThrow();
 			});
 
 			it(`should resolves`, async () => {
 				expect.assertions(1);
 
-				await expect(service.start()).resolves.toBe(undefined);
+				await expect(service.start(discordConfigMock)).resolves.toBe(undefined);
 			});
 
 			it(`should call LoggerService:success()`, async () => {
 				expect.assertions(1);
 
-				await service.start().then(() => {
+				await service.start(discordConfigMock).then(() => {
 					expect(loggerSuccessSpy).toHaveBeenCalledTimes(1);
 				});
 			});

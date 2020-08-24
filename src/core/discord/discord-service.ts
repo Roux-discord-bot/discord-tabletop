@@ -17,8 +17,8 @@ export class DiscordService {
 
 	public async start(config: IDiscordConfig): Promise<void> {
 		return Promise.all([
-			DiscordEventService.getInstance().init(config.events),
-			DiscordAuthenticationService.getInstance().init(),
+			await DiscordEventService.getInstance().init(config.events),
+			await DiscordAuthenticationService.getInstance().init(),
 		])
 			.then(() => {
 				LoggerService.getInstance().success({

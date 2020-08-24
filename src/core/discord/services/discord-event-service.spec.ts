@@ -5,6 +5,7 @@ import {
 	DiscordEventHandler,
 	ClientListenerActionType,
 } from "../features/discord-event-handler";
+import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordClientService } from "./discord-client-service";
 import { DiscordEventService } from "./discord-event-service";
 
@@ -40,7 +41,7 @@ describe(`DiscordEventService`, () => {
 	describe(`:init()`, () => {
 		let loggerServiceInfoSpy: jest.SpyInstance;
 		let discordClientServiceGetClientSpy: jest.SpyInstance;
-		let examplePath: string;
+		let examplePath: IDiscordConfig;
 
 		beforeEach(() => {
 			loggerServiceInfoSpy = jest
@@ -49,7 +50,9 @@ describe(`DiscordEventService`, () => {
 			discordClientServiceGetClientSpy = jest
 				.spyOn(discordClientService, `getClient`)
 				.mockReturnValue(createMock<Client>());
-			examplePath = __dirname;
+			examplePath = createMock<IDiscordConfig>({
+				events: __dirname,
+			});
 		});
 
 		it(`should call DiscordClientService:getClient()`, async () => {

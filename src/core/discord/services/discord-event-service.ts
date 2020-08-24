@@ -7,6 +7,7 @@ import {
 	DiscordEventHandler,
 } from "../features/discord-event-handler";
 import { DiscordClientService } from "./discord-client-service";
+import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
 export class DiscordEventService {
 	private static _instance: DiscordEventService;
@@ -61,9 +62,9 @@ export class DiscordEventService {
 		});
 	}
 
-	public async init(eventsPath: string): Promise<void> {
+	public async init({ events }: IDiscordConfig): Promise<void> {
 		const client = DiscordClientService.getInstance().getClient();
-		const eventHandlers = (await this._fillEventHandlers(eventsPath)) || [];
+		const eventHandlers = (await this._fillEventHandlers(events)) || [];
 		return this._registerEachEventHandlersOnClient(eventHandlers, client);
 	}
 

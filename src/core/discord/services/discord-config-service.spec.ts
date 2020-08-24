@@ -1,3 +1,5 @@
+import { createMock } from "ts-auto-mock";
+import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordConfigService } from "./discord-config-service";
 
 describe(`Discord Config Service`, () => {
@@ -21,66 +23,99 @@ describe(`Discord Config Service`, () => {
 		});
 	});
 
-	describe(`:getDiscordToken()`, () => {
-		// Safest way to do testing with process.env
-		// without breaking anything
-		let OLD_ENV: NodeJS.ProcessEnv;
+	describe(`:init()`, () => {
+		const exampleToken = `test`;
+		let discordConfig: IDiscordConfig;
 
-		beforeAll(() => {
-			OLD_ENV = process.env;
-		});
-
-		afterAll(() => {
-			process.env = OLD_ENV;
-		});
-
-		beforeEach(() => {
+		beforeEach(async () => {
 			service = new DiscordConfigService();
-			jest.resetModules(); // most important - it clears the cache
-			process.env = { ...OLD_ENV };
+			discordConfig = createMock<IDiscordConfig>({
+				discordToken: exampleToken,
+			});
 		});
 
-		it(`should return a non empty non null non undefined string`, () => {
-			expect.assertions(3);
+		describe(`when the token from the config is valid`, () => {
+			it(`should not throw`, async () => {
+				expect.assertions(1);
+
+				const promise = service.init(discordConfig);
+
+				await expect(promise).resolves.not.toThrow();
+			});
+
+			it(`should return a resolved Promise`, async () => {
+				expect.assertions(1);
+
+				const promise = service.init(discordConfig);
+
+				await expect(promise).resolves.toBe(undefined);
+			});
+		});
+
+		describe(`when the token from the config is missing/undefined`, () => {
+			beforeEach(async () => {
+				service = new DiscordConfigService();
+				discordConfig = createMock<IDiscordConfig>({
+					discordToken: undefined,
+				});
+			});
+
+			it(`should throw`, async () => {
+				expect.assertions(1);
+
+				const promise = service.init(discordConfig);
+
+				await expect(promise).rejects.toThrow();
+			});
+		});
+	});
+
+	describe(`:getDiscordToken()`, () => {
+		const exampleToken = `test`;
+
+		beforeEach(async () => {
+			const config = createMock<IDiscordConfig>({
+				discordToken: exampleToken,
+			});
+			service = new DiscordConfigService();
+			await service.init(config);
+		});
+
+		it(`should return a string`, () => {
+			expect.assertions(1);
 
 			const token = service.getDiscordToken();
 
-			expect(token).not.toHaveLength(0);
-			expect(token).not.toBeNull();
-			expect(token).toBeDefined();
+			expect(token).toStrictEqual(expect.any(String));
 		});
 
-		describe(`when no DISCORD_TOKEN env variable is specified`, () => {
-			beforeEach(() => {
-				// use 'delete' to ensure the key is removed, reason :
-				// "Assigning a property on process.env will
-				// implicitly convert the value to a string."
-				// https://nodejs.org/api/process.html#process_process_env
-				delete process.env.DISCORD_TOKEN;
-			});
-
-			it(`should return the MISSING_TOKEN value from the config`, () => {
+		describe(`when the token in the config is valid`, () => {
+			it(`should return the token`, () => {
 				expect.assertions(1);
 
 				const token = service.getDiscordToken();
 
-				expect(token).toStrictEqual(service.MISSING_TOKEN);
+				expect(token).toStrictEqual(exampleToken);
 			});
 		});
 
-		describe(`when a DISCORD_TOKEN env variable is specified`, () => {
-			const EXAMPLE_TOKEN = `EXAMPLE.TOKEN.SPECIFIED`;
-
-			beforeEach(() => {
-				process.env.DISCORD_TOKEN = EXAMPLE_TOKEN;
+		describe(`when the token in the config is missing/undefined/invalid`, () => {
+			beforeEach(async () => {
+				const config = createMock<IDiscordConfig>({
+					discordToken: undefined,
+				});
+				service = new DiscordConfigService();
+				await service.init(config).catch(() => {
+					/* tips to disable empty brackets */
+				});
 			});
 
-			it(`should return the specified token`, () => {
+			it(`should return an empty string`, () => {
 				expect.assertions(1);
 
 				const token = service.getDiscordToken();
 
-				expect(token).toStrictEqual(EXAMPLE_TOKEN);
+				expect(token).toStrictEqual(``);
 			});
 		});
 	});

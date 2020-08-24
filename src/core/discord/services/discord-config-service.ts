@@ -1,9 +1,10 @@
 import _ from "lodash";
+import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
 export class DiscordConfigService {
 	private static _instance: DiscordConfigService;
 
-	public MISSING_TOKEN = `MISSING_TOKEN`;
+	private _discordToken = ``;
 
 	public static getInstance(): DiscordConfigService {
 		if (_.isNil(DiscordConfigService._instance))
@@ -11,16 +12,13 @@ export class DiscordConfigService {
 		return DiscordConfigService._instance;
 	}
 
+	public async init({ discordToken }: IDiscordConfig): Promise<void> {
+		if (!discordToken)
+			throw new Error(`The discord token is missing from the config !`);
+		this._discordToken = discordToken;
+	}
+
 	public getDiscordToken(): string {
-		const token = process.env.DISCORD_TOKEN;
-		if (
-			typeof token === `string` &&
-			!_.isEmpty(token) &&
-			!_.isNil(token) &&
-			token !== `undefined`
-		) {
-			return token;
-		}
-		return this.MISSING_TOKEN;
+		return this._discordToken;
 	}
 }

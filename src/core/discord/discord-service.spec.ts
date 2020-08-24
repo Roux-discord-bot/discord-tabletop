@@ -3,15 +3,18 @@ import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordService } from "./discord-service";
 import { IDiscordConfig } from "./interfaces/discord-config-interface";
 import { DiscordAuthenticationService } from "./services/discord-authentication-service";
+import { DiscordConfigService } from "./services/discord-config-service";
 import { DiscordEventService } from "./services/discord-event-service";
 
 describe(`Discord Service`, () => {
 	let service: DiscordService;
-	let discordAuthenticationService: DiscordAuthenticationService;
+	let discordConfigService: DiscordConfigService;
 	let discordEventService: DiscordEventService;
+	let discordAuthenticationService: DiscordAuthenticationService;
 	let loggerService: LoggerService;
 
 	beforeAll(() => {
+		discordConfigService = DiscordConfigService.getInstance();
 		discordAuthenticationService = DiscordAuthenticationService.getInstance();
 		discordEventService = DiscordEventService.getInstance();
 		loggerService = LoggerService.getInstance();
@@ -38,6 +41,7 @@ describe(`Discord Service`, () => {
 	describe(`:start()`, () => {
 		let loggerSuccessSpy: jest.SpyInstance;
 		let loggerErrorSpy: jest.SpyInstance;
+		let discordConfigServiceInitSpy: jest.SpyInstance;
 		let discordAuthenticationServiceInitSpy: jest.SpyInstance;
 		let discordEventServiceInitSpy: jest.SpyInstance;
 		let discordConfigMock: IDiscordConfig;
@@ -48,13 +52,26 @@ describe(`Discord Service`, () => {
 				.spyOn(loggerService, `success`)
 				.mockImplementation();
 			loggerErrorSpy = jest.spyOn(loggerService, `error`).mockImplementation();
-			discordAuthenticationServiceInitSpy = jest
-				.spyOn(discordAuthenticationService, `init`)
+			discordConfigServiceInitSpy = jest
+				.spyOn(discordConfigService, `init`)
 				.mockResolvedValue();
 			discordEventServiceInitSpy = jest
 				.spyOn(discordEventService, `init`)
 				.mockResolvedValue();
-			discordConfigMock = createMock<IDiscordConfig>();
+			discordAuthenticationServiceInitSpy = jest
+				.spyOn(discordAuthenticationService, `init`)
+				.mockResolvedValue();
+			discordConfigMock = createMock<IDiscordConfig>({
+				discordToken: `EXAMPLE_TOKEN`,
+			});
+		});
+
+		it(`should call DiscordConfigService:init()`, async () => {
+			expect.assertions(1);
+
+			await service.start(discordConfigMock);
+
+			expect(discordConfigServiceInitSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it(`should call DiscordEventService:init()`, async () => {

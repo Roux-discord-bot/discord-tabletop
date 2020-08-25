@@ -1,5 +1,5 @@
 import { createMock } from "ts-auto-mock";
-import { LoggerService } from "../../utils/logger/logger-service";
+import { LoggerService } from "../utils/logger/logger-service";
 import { DiscordService } from "./discord-service";
 import { IDiscordConfig } from "./interfaces/discord-config-interface";
 import { DiscordAuthenticationService } from "./services/discord-authentication-service";

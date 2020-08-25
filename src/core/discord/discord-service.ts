@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import _ from "lodash";
-import { LoggerService } from "../../utils/logger/logger-service";
+import { LoggerService } from "../utils/logger/logger-service";
 import { IDiscordConfig } from "./interfaces/discord-config-interface";
 import { DiscordAuthenticationService } from "./services/discord-authentication-service";
 import { DiscordConfigService } from "./services/discord-config-service";

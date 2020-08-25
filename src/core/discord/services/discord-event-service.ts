@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Client, Constructable } from "discord.js";
-import { LoggerService } from "../../../utils/logger/logger-service";
+import { LoggerService } from "../../utils/logger/logger-service";
 import { recursiveReadDir } from "../../functions/recursive-read-dir";
 import {
 	ClientListenerActionType,

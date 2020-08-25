@@ -1,6 +1,6 @@
 import { Client } from "discord.js";
 import { createMock } from "ts-auto-mock";
-import { LoggerService } from "../../../utils/logger/logger-service";
+import { LoggerService } from "../../utils/logger/logger-service";
 import {
 	DiscordEventHandler,
 	ClientListenerActionType,
@@ -90,6 +90,7 @@ describe(`DiscordEventService`, () => {
 					`getEvent`
 				);
 				jest
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					.spyOn<DiscordEventService, any>(service, `_fillEventHandlers`)
 					.mockResolvedValue([discordEventMock]);
 			});

@@ -1,4 +1,4 @@
-import { LoggerService } from "../utils/logger/logger-service";
+import { LoggerService } from "../core/utils/logger/logger-service";
 import { DiscordEventHandler } from "../core/discord/features/discord-event-handler";
 
 export class DiscordEventReady extends DiscordEventHandler {

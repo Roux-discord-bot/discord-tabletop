@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { LoggerService } from "../../../utils/logger/logger-service";
+import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordConfigService } from "./discord-config-service";
 import { DiscordClientService } from "./discord-client-service";
 

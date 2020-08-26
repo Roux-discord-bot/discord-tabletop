@@ -147,6 +147,7 @@ describe(`DiscordEventService`, () => {
 					});
 				});
 			});
+
 			describe(`on an invalid action`, () => {
 				beforeEach(() => {
 					discordEventHandlerGetActionSpy = jest

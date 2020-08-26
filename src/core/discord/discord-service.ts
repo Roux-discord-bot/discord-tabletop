@@ -3,6 +3,7 @@ import _ from "lodash";
 import { LoggerService } from "../utils/logger/logger-service";
 import { IDiscordConfig } from "./interfaces/discord-config-interface";
 import { DiscordAuthenticationService } from "./services/discord-authentication-service";
+import { DiscordCommandService } from "./services/discord-command-service";
 import { DiscordConfigService } from "./services/discord-config-service";
 import { DiscordEventService } from "./services/discord-event-service";
 
@@ -20,6 +21,7 @@ export class DiscordService {
 		return Promise.resolve() // Just to keep each init lined up
 			.then(() => DiscordConfigService.getInstance().init(config))
 			.then(() => DiscordEventService.getInstance().init(config))
+			.then(() => DiscordCommandService.getInstance().init(config))
 			.then(() => DiscordAuthenticationService.getInstance().init())
 			.then(() => {
 				LoggerService.getInstance().success({

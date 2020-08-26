@@ -1,14 +1,39 @@
 import _ from "lodash";
-import { Constructable, Message } from "discord.js";
+import { Client, Message } from "discord.js";
 import { oneLine } from "common-tags";
 import { LoggerService } from "../../utils/logger/logger-service";
-import { recursiveReadDir } from "../../functions/recursive-read-dir";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import {
 	DiscordCommandData,
 	DiscordCommandHandler,
 } from "../features/discord-command-handler";
 import { DiscordEventService } from "./discord-event-service";
+import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
+import { DiscordEventHandler } from "../features/discord-event-handler";
+
+class DiscordOnMessageEvent extends DiscordEventHandler {
+	private discordCommandService: DiscordCommandService;
+
+	constructor(discordEventService: DiscordCommandService) {
+		super();
+		this.discordCommandService = discordEventService;
+	}
+
+	public async assignEventsToClient(client: Client): Promise<void> {
+		client.on(`message`, async message => {
+			await this._onMessage(message);
+		});
+	}
+
+	private async _onMessage(message: Message): Promise<void> {
+		const { prefix } = this.discordCommandService;
+		if (!message.content.startsWith(prefix) || message.author.bot) return;
+		const args = message.content.slice(prefix.length).trim().split(/ +/g);
+		const command = args.shift()?.toLowerCase();
+		if (!command) return;
+		await this.discordCommandService.call(message, command, ...args);
+	}
+}
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
@@ -31,7 +56,13 @@ export class DiscordCommandService {
 		return result;
 	}
 
-	private async _call(
+	private _prefix = ``;
+
+	public get prefix(): string {
+		return this._prefix;
+	}
+
+	public async call(
 		message: Message,
 		command: string,
 		...args: string[]
@@ -42,74 +73,15 @@ export class DiscordCommandService {
 		await commandHandler.handleCommand(message, args);
 	}
 
-	private async _retrieveCommandHandlers(
-		eventsPath: string
-	): Promise<DiscordCommandHandler[]> {
-		const files = recursiveReadDir(eventsPath);
-		if (files.length === 0) return [];
-		return files
-			.map(async filePath => {
-				return this._importClassesFromPath(filePath);
-			})
-			.reduce(async (promiseAccumulator, promiseCurrent) => {
-				const accumulator = await promiseAccumulator;
-				const current = await promiseCurrent;
-				accumulator.push(...current);
-				return promiseAccumulator;
-			});
-	}
-
-	private async _importClassesFromPath(
-		filePath: string
-	): Promise<DiscordCommandHandler[]> {
-		return import(filePath)
-			.then(file => {
-				return this._instantiateGivenClasses(file).filter(clazz => {
-					return clazz instanceof DiscordCommandHandler;
-				});
-			})
-			.catch(err => {
-				LoggerService.getInstance().error({
-					context: `DiscordCommandService`,
-					message: `Error retrieving all the command handlers, reason : \n${err}`,
-				});
-				return Promise.reject(new Error(err));
-			});
-	}
-
-	private _instantiateGivenClasses(classes: {
-		[key: string]: Constructable<DiscordCommandHandler>;
-	}): DiscordCommandHandler[] {
-		return Object.keys(classes).map(cname => {
-			return new classes[cname]();
-		});
-	}
-
-	private _prefix = ``;
-
-	public get prefix(): string {
-		return this._prefix;
-	}
-
 	public async init({ prefix, commands }: IDiscordConfig): Promise<void> {
 		this._prefix = prefix;
-		const commandHandlers = await this._retrieveCommandHandlers(commands);
+		const commandHandlers = await getInstancesFromFolder<DiscordCommandHandler>(
+			commands
+		);
 		await this._registerEachCommandHandlerInRegistry(commandHandlers);
-		DiscordEventService.getInstance().registerEventHandler({
-			assignEventsToClient: async client => {
-				client.on(`message`, async message => {
-					await this._onMessage(message);
-				});
-			},
-		});
-	}
-
-	private async _onMessage(message: Message): Promise<void> {
-		if (!message.content.startsWith(this._prefix) || message.author.bot) return;
-		const args = message.content.slice(this._prefix.length).trim().split(/ +/g);
-		const command = args.shift()?.toLowerCase();
-		if (!command) return;
-		await this._call(message, command, ...args);
+		DiscordEventService.getInstance().registerEventHandler(
+			new DiscordOnMessageEvent(this)
+		);
 	}
 
 	private async _registerEachCommandHandlerInRegistry(

@@ -9,7 +9,7 @@ if (config.error) {
 }
 
 if (!config.parsed) {
-	throw new Error(`Fatal error, cannot load the .env`);
+	throw new Error(`FATAL error, cannot load the .env`);
 }
 
 DiscordService.getInstance().start({

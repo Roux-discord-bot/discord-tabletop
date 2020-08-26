@@ -2,10 +2,7 @@ import _ from "lodash";
 import { Client, Constructable } from "discord.js";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { recursiveReadDir } from "../../functions/recursive-read-dir";
-import {
-	ClientListenerActionType,
-	DiscordEventHandler,
-} from "../features/discord-event-handler";
+import { DiscordEventHandler } from "../features/discord-event-handler";
 import { DiscordClientService } from "./discord-client-service";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
@@ -72,38 +69,27 @@ export class DiscordEventService {
 		eventHandlers: DiscordEventHandler[],
 		client: Client
 	): void | PromiseLike<void> {
-		return new Promise((resolve, reject) => {
+		return new Promise(resolve => {
 			eventHandlers.forEach(eventHandler => {
-				const action: ClientListenerActionType = eventHandler.getAction();
-				if (this._clientHasFunctionForAction(client, action)) {
-					this._registerEventHandlerOnClient(eventHandler, client, action);
-				} else {
-					reject(new Error(`Invalid action : ${action}`));
-				}
+				this._registerEventHandlerOnClient(eventHandler, client);
 			});
 			resolve();
 		});
 	}
 
-	private _clientHasFunctionForAction(
-		client: Client,
-		action: ClientListenerActionType
-	) {
-		return typeof client[action] === `function`;
+	private async _registerEventHandlerOnClient(
+		eventHandler: DiscordEventHandler,
+		client: Client
+	): Promise<void> {
+		await eventHandler.assignEventsToClient(client);
+		LoggerService.getInstance().info({
+			context: `DiscordEventService`,
+			message: `${eventHandler.constructor.name} successfully assigned to the Discord client`,
+		});
 	}
 
-	private _registerEventHandlerOnClient(
-		eventHandler: DiscordEventHandler,
-		client: Client,
-		action: ClientListenerActionType
-	): void {
-		const event = eventHandler.getEvent();
-		client[action](event, (...args) => {
-			eventHandler.handleEvent(args);
-		});
-		LoggerService.getInstance().info({
-			context: eventHandler.constructor.name,
-			message: `Registered event handler on '${event}' with action [${action}]`,
-		});
+	public registerEventHandler(eventHandler: DiscordEventHandler): void {
+		const client = DiscordClientService.getInstance().getClient();
+		this._registerEventHandlerOnClient(eventHandler, client);
 	}
 }

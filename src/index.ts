@@ -14,5 +14,7 @@ if (!config.parsed) {
 
 DiscordService.getInstance().start({
 	events: path.join(__dirname, `events`),
+	commands: path.join(__dirname, `commands`),
+	prefix: `!`,
 	discordToken: config.parsed.DISCORD_TOKEN,
 });

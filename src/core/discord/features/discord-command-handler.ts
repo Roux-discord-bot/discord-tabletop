@@ -2,9 +2,9 @@ import { Message } from "discord.js";
 import { DiscordCommandService } from "../services/discord-command-service";
 
 export interface DiscordCommandData {
-	readonly name: string;
-	readonly description: string;
-	readonly aliases: string[];
+	name: string;
+	description: string;
+	aliases: string[];
 }
 
 export type DiscordCommandOptions = Partial<DiscordCommandData>;
@@ -14,7 +14,7 @@ export abstract class DiscordCommandHandler {
 
 	protected readonly _command: string;
 
-	protected readonly _data: DiscordCommandData;
+	protected readonly _data: Readonly<DiscordCommandData>;
 
 	constructor(command: string, options: DiscordCommandOptions) {
 		this._commandService = DiscordCommandService.getInstance();
@@ -36,7 +36,7 @@ export abstract class DiscordCommandHandler {
 	}
 
 	public getCallnames(): string[] {
-		return Object.assign([this.getCommand()], this.getData().aliases);
+		return Array<string>(this.getCommand(), ...this.getData().aliases);
 	}
 
 	public getData(): DiscordCommandData {

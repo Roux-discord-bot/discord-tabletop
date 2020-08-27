@@ -35,6 +35,10 @@ export abstract class DiscordCommandHandler {
 		return this._command;
 	}
 
+	public getCallnames(): string[] {
+		return Object.assign([this.getCommand()], this.getData().aliases);
+	}
+
 	public getData(): DiscordCommandData {
 		return this._data;
 	}

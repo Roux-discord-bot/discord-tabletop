@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { DiscordService } from "./core/discord/discord-service";
+import { DiscordCommandService } from "./core/discord/services/discord-command-service";
 import { DiscordEventService } from "./core/discord/services/discord-event-service";
 
 async function main() {
@@ -20,9 +21,14 @@ async function main() {
 		prefix: `!`,
 		discordToken: config.parsed.DISCORD_TOKEN,
 	});
+
 	const events = DiscordEventService.getInstance().getRepository().all();
 	console.log(`events :`);
 	console.log(events);
+
+	const commands = DiscordCommandService.getInstance().getRepository().all();
+	console.log(`commands :`);
+	console.log(commands);
 }
 
 main();

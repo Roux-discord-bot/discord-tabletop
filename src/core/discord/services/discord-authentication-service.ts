@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { LoggerService } from "../../utils/logger/logger-service";
-import { DiscordConfigService } from "./discord-config-service";
 import { DiscordClientService } from "./discord-client-service";
+import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
 export class DiscordAuthenticationService {
 	private static _instance: DiscordAuthenticationService;
@@ -14,19 +14,18 @@ export class DiscordAuthenticationService {
 		return DiscordAuthenticationService._instance;
 	}
 
-	public async init(): Promise<void> {
-		return this.login();
+	public async init({ discordToken }: IDiscordConfig): Promise<void> {
+		return this.login(discordToken);
 	}
 
-	public async login(): Promise<void> {
-		const discordConfigService = DiscordConfigService.getInstance();
+	public async login(token: string): Promise<void> {
 		LoggerService.getInstance().info({
 			context: `DiscordAuthenticationService`,
 			message: `The bot is logging in . . .`,
 		});
 		return DiscordClientService.getInstance()
 			.getClient()
-			.login(discordConfigService.getDiscordToken())
+			.login(token)
 			.then(() => {
 				this._authenticated = true;
 			})

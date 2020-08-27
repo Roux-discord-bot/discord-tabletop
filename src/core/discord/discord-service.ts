@@ -22,7 +22,7 @@ export class DiscordService {
 			.then(() => DiscordConfigService.getInstance().init(config))
 			.then(() => DiscordEventService.getInstance().init(config))
 			.then(() => DiscordCommandService.getInstance().init(config))
-			.then(() => DiscordAuthenticationService.getInstance().init())
+			.then(() => DiscordAuthenticationService.getInstance().init(config))
 			.then(() => {
 				LoggerService.getInstance().success({
 					context: `DiscordService`,

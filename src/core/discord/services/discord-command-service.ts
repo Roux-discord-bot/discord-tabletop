@@ -4,15 +4,9 @@ import { DiscordEventService } from "./discord-event-service";
 import { DiscordEventHandler } from "../features/discord-event-handler";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
+import { DiscordConfigService } from "./discord-config-service";
 
 class DiscordOnMessageEvent extends DiscordEventHandler {
-	private discordCommandService: DiscordCommandService;
-
-	constructor(discordEventService: DiscordCommandService) {
-		super();
-		this.discordCommandService = discordEventService;
-	}
-
 	public async assignEventsToClient(client: Client): Promise<void> {
 		client.on(`message`, async message => {
 			await this._onMessage(message);
@@ -20,12 +14,13 @@ class DiscordOnMessageEvent extends DiscordEventHandler {
 	}
 
 	private async _onMessage(message: Message): Promise<void> {
-		const { prefix } = this.discordCommandService;
+		const prefix = DiscordConfigService.getInstance().get(`prefix`);
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 		const args = message.content.slice(prefix.length).trim().split(/ +/g);
 		const callname = args.shift()?.toLowerCase();
 		if (!callname) return;
-		await this.discordCommandService.call(message, callname, ...args);
+		// eslint-disable-next-line no-use-before-define
+		await DiscordCommandService.getInstance().call(message, callname, ...args);
 	}
 }
 
@@ -37,12 +32,6 @@ export class DiscordCommandService {
 			DiscordCommandService._instance = new DiscordCommandService();
 
 		return DiscordCommandService._instance;
-	}
-
-	private _prefix = ``;
-
-	public get prefix(): string {
-		return this._prefix;
 	}
 
 	public async call(
@@ -58,12 +47,11 @@ export class DiscordCommandService {
 
 	private readonly _repository = new DiscordCommandRepository();
 
-	public async init({ prefix, commands }: IDiscordConfig): Promise<void> {
-		this._prefix = prefix;
+	public async init({ commands }: IDiscordConfig): Promise<void> {
 		await this._repository.build(commands);
-		DiscordEventService.getInstance()
+		return DiscordEventService.getInstance()
 			.getRepository()
-			.registerEventHandler(new DiscordOnMessageEvent(this));
+			.registerEventHandler(new DiscordOnMessageEvent());
 	}
 
 	public getRepository(): DiscordCommandRepository {

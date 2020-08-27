@@ -33,10 +33,11 @@ export class DiscordEventRepository extends Repository<DiscordEventHandler> {
 	private async _registerEachEventHandlers(
 		eventHandlers: DiscordEventHandler[]
 	): Promise<void> {
-		return new Promise((_, reject) => {
+		return new Promise((resolve, reject) => {
 			eventHandlers.forEach(eventHandler => {
 				this._registerEventHandler(eventHandler).catch(reject);
 			});
+			resolve();
 		});
 	}
 

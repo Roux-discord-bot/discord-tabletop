@@ -4,7 +4,7 @@ import { IDiscordConfig } from "../interfaces/discord-config-interface";
 export class DiscordConfigService {
 	private static _instance: DiscordConfigService;
 
-	private _discordToken = ``;
+	private _config!: IDiscordConfig;
 
 	public static getInstance(): DiscordConfigService {
 		if (_.isNil(DiscordConfigService._instance))
@@ -12,13 +12,13 @@ export class DiscordConfigService {
 		return DiscordConfigService._instance;
 	}
 
-	public async init({ discordToken }: IDiscordConfig): Promise<void> {
-		if (!discordToken)
+	public async init(config: IDiscordConfig): Promise<void> {
+		if (!config.discordToken)
 			throw new Error(`The discord token is missing from the config !`);
-		this._discordToken = discordToken;
+		this._config = config;
 	}
 
-	public getDiscordToken(): string {
-		return this._discordToken;
+	public get(key: keyof IDiscordConfig): string {
+		return this._config[key];
 	}
 }

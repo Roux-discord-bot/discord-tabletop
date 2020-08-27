@@ -15,7 +15,7 @@ export class DiscordEventService {
 	private readonly _repository = new DiscordEventRepository();
 
 	public async init({ events }: IDiscordConfig): Promise<void> {
-		return this._repository.build(events);
+		await this._repository.build(events);
 	}
 
 	public getRepository(): DiscordEventRepository {

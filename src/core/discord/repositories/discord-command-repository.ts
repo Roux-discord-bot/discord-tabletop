@@ -17,7 +17,7 @@ export class DiscordCommandRepository extends Repository<
 		const commandHandlers = await getInstancesFromFolder<DiscordCommandHandler>(
 			commandsPath
 		);
-		await this._registerCommandHandlers(commandHandlers);
+		this._registerCommandHandlers(commandHandlers);
 		this._isBuilt = true;
 	}
 
@@ -33,17 +33,13 @@ export class DiscordCommandRepository extends Repository<
 		});
 	}
 
-	private async _registerCommandHandlers(
-		commandHandlers: DiscordCommandHandler[]
-	): Promise<void> {
-		commandHandlers.forEach(async commandHandler => {
-			await this._registerCommand(commandHandler);
+	private _registerCommandHandlers(commandHandlers: DiscordCommandHandler[]) {
+		commandHandlers.forEach(commandHandler => {
+			this._registerCommand(commandHandler);
 		});
 	}
 
-	private async _registerCommand(
-		commandHandler: DiscordCommandHandler
-	): Promise<void> {
+	private _registerCommand(commandHandler: DiscordCommandHandler): void {
 		const callnames = commandHandler.getCallnames();
 		this._checkCallnamesAreAvailables(callnames);
 		this.add(commandHandler);
@@ -54,7 +50,7 @@ export class DiscordCommandRepository extends Repository<
 		});
 	}
 
-	private _checkCallnamesAreAvailables(callnames: string[]) {
+	private _checkCallnamesAreAvailables(callnames: string[]): void {
 		const assigned = this._useTakenCallname(callnames);
 		if (!assigned) return;
 		const callname = assigned

@@ -27,14 +27,16 @@ export class DiscordEventRepository extends Repository<DiscordEventHandler> {
 			throw new Error(
 				`The repository needs to be built before being fully available !`
 			);
-		await this._registerEventHandler(eventHandler);
+		return this._registerEventHandler(eventHandler);
 	}
 
 	private async _registerEachEventHandlers(
 		eventHandlers: DiscordEventHandler[]
 	): Promise<void> {
-		eventHandlers.forEach(async eventHandler => {
-			await this._registerEventHandler(eventHandler);
+		return new Promise((_, reject) => {
+			eventHandlers.forEach(eventHandler => {
+				this._registerEventHandler(eventHandler).catch(reject);
+			});
 		});
 	}
 

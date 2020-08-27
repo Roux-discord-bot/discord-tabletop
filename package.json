@@ -10,7 +10,8 @@
 	},
 	"main": "src/index.ts",
 	"scripts": {
-		"start": "ts-node-dev --require 'dotenv/config' --respawn --transpile-only .",
+		"start": "ts-node-dev --require 'dotenv/config' --transpile-only .",
+		"start:watch": "ts-node-dev --require 'dotenv/config' --respawn --transpile-only .",
 		"lint": "eslint src",
 		"lint:fix": "eslint --fix src",
 		"build": "echo \"Error: no build specified\" && exit 1",

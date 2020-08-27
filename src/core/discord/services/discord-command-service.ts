@@ -79,9 +79,9 @@ export class DiscordCommandService {
 			commands
 		);
 		await this._registerEachCommandHandlerInRegistry(commandHandlers);
-		DiscordEventService.getInstance().registerEventHandler(
-			new DiscordOnMessageEvent(this)
-		);
+		DiscordEventService.getInstance()
+			.getRepository()
+			.registerEventHandler(new DiscordOnMessageEvent(this));
 	}
 
 	private async _registerEachCommandHandlerInRegistry(

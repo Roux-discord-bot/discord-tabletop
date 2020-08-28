@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { Client } from "discord.js";
+import { DiscordClient } from "../classes/discord-client";
 
 export class DiscordClientService {
 	private static _instance: DiscordClientService;
 
-	private _client: Client | undefined = undefined;
+	private _client: DiscordClient | undefined = undefined;
 
 	public static getInstance(): DiscordClientService {
 		if (_.isNil(DiscordClientService._instance))
@@ -13,14 +13,14 @@ export class DiscordClientService {
 		return DiscordClientService._instance;
 	}
 
-	public createClient(): Client {
-		this._client = new Client();
+	private _createClient(): DiscordClient {
+		this._client = new DiscordClient();
 
 		return this._client;
 	}
 
-	public getClient(): Client {
-		if (_.isNil(this._client)) return this.createClient();
+	public getClient(): DiscordClient {
+		if (_.isNil(this._client)) return this._createClient();
 		return this._client;
 	}
 }

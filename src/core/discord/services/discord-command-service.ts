@@ -1,13 +1,14 @@
 import _ from "lodash";
-import { Client, Message } from "discord.js";
+import { Message } from "discord.js";
 import { DiscordEventService } from "./discord-event-service";
 import { DiscordEventHandler } from "../features/discord-event-handler";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordConfigService } from "./discord-config-service";
+import { DiscordClient } from "../classes/discord-client";
 
 class DiscordOnMessageEvent extends DiscordEventHandler {
-	public async assignEventsToClient(client: Client): Promise<void> {
+	public async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`message`, async message => {
 			await this._onMessage(message);
 		});

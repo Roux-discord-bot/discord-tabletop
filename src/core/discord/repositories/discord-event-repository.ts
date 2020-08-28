@@ -1,14 +1,14 @@
-import { Client } from "discord.js";
 import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
 import { DiscordEventHandler } from "../features/discord-event-handler";
 import { Repository } from "../../features/repository";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "../services/discord-client-service";
+import { DiscordClient } from "../classes/discord-client";
 
 export class DiscordEventRepository extends Repository<DiscordEventHandler> {
 	private _isBuilt = false;
 
-	private _client: Client | undefined;
+	private _client!: DiscordClient;
 
 	public async build(eventsPath: string): Promise<void> {
 		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);

@@ -21,4 +21,8 @@ export class DiscordConfigService {
 	public get(key: keyof IDiscordConfig): string {
 		return this._config[key];
 	}
+
+	public get config(): Readonly<IDiscordConfig> {
+		return this._config;
+	}
 }

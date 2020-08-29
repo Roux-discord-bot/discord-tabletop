@@ -26,6 +26,9 @@ async function main(): Promise<void> {
 			logger: {
 				debug: false,
 			},
+			client: {
+				owner: `230336648942977024`,
+			},
 		})
 		.then(() => {
 			const events = DiscordEventService.getInstance()

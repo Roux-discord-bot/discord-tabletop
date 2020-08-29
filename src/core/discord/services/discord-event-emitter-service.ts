@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { CustomEvents } from "src/core/interfaces/event-interface";
+import { CustomEvents } from "../../interfaces/event-interface";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "./discord-client-service";
 

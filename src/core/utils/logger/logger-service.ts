@@ -2,8 +2,8 @@
 import chalk from "chalk";
 import { oneLine } from "common-tags";
 import _ from "lodash";
-import { IDiscordConfig } from "src/core/discord/interfaces/discord-config-interface";
 import timestamp from "time-stamp";
+import { IDiscordConfig } from "../../discord/interfaces/discord-config-interface";
 import { ILogConfig, ILoggerTypes } from "./logger-interface";
 
 export class LoggerService {

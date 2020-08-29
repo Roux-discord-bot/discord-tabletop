@@ -1,4 +1,4 @@
-import { DiscordClient } from "src/core/discord/classes/discord-client";
+import { DiscordClient } from "../core/discord/classes/discord-client";
 import { DiscordEventHandler } from "../core/discord/classes/discord-event-handler";
 import { LoggerService } from "../core/utils/logger/logger-service";
 

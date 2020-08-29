@@ -1,11 +1,11 @@
-import { ClientOptions } from "discord.js";
-import { ILoggerTypes } from "src/core/utils/logger/logger-interface";
+import { ILoggerTypes } from "../../utils/logger/logger-interface";
+import { IDiscordClientOptions } from "./discord-client-options-interface";
 
 export interface IDiscordConfig {
 	discordToken: string;
 	events: string;
 	prefix: string;
 	commands: string;
-	client?: ClientOptions;
+	client?: IDiscordClientOptions;
 	logger?: ILoggerTypes;
 }

@@ -25,15 +25,19 @@ async function main(): Promise<void> {
 			discordToken: config.parsed.DISCORD_TOKEN,
 		})
 		.then(() => {
-			const events = DiscordEventService.getInstance().getRepository().all();
+			const events = DiscordEventService.getInstance()
+				.getRepository()
+				.all()
+				.map(value => value.constructor.name);
 			console.log(`events :`);
-			console.log(events.map(value => value.constructor.name));
+			console.log(events);
 
 			const commands = DiscordCommandService.getInstance()
 				.getRepository()
-				.all();
+				.all()
+				.map(value => value.constructor.name);
 			console.log(`commands :`);
-			console.log(commands.map(value => value.constructor.name));
+			console.log(commands);
 		})
 		.catch(error => {
 			console.error(error);

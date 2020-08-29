@@ -4,6 +4,7 @@ import { DiscordEventService } from "./discord-event-service";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordMessageEvent } from "../classes/discord-message-event";
+import { DiscordEventEmitterService } from "./discord-event-emitter-service";
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
@@ -21,9 +22,11 @@ export class DiscordCommandService {
 		...args: string[]
 	): Promise<void> {
 		const commandHandler = this._repository.getCommand(callname);
-		if (!commandHandler)
-			throw new Error(`Command '${callname}' cannot be found !`);
-		await commandHandler.handleCommand(message, args);
+		if (!commandHandler) {
+			DiscordEventEmitterService.getInstance().emit(`unknownCommand`, message);
+		} else {
+			await commandHandler.handleCommand(message, args);
+		}
 	}
 
 	private readonly _repository = new DiscordCommandRepository();

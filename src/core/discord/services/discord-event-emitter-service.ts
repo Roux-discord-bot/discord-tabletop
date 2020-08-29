@@ -33,7 +33,7 @@ export class DiscordEventEmitterService {
 			return;
 		}
 		// Returns true if the event had listeners, false otherwise.
-		if (client.emit(event, args)) {
+		if (client.emit(event, ...args)) {
 			LoggerService.getInstance().info({
 				context: `DiscordEventEmitterService`,
 				message: `The event '${event}' was emitted`,

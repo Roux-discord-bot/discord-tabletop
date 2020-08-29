@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { DiscordLogEvent } from "../classes/discord-log-event";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordEventRepository } from "../repositories/discord-event-repository";
 
@@ -16,6 +17,7 @@ export class DiscordEventService {
 
 	public async init({ events }: IDiscordConfig): Promise<void> {
 		await this._repository.build(events);
+		this.getRepository().registerEventHandler(new DiscordLogEvent());
 	}
 
 	public getRepository(): DiscordEventRepository {

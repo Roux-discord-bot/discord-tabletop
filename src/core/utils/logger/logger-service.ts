@@ -50,7 +50,7 @@ export class LoggerService {
 	}
 
 	public log(header: string, options: ILogger): void {
-		const log = this.createLog(header, {
+		const log = this._createLog(header, {
 			chalkMessage: chalk.whiteBright,
 			...options,
 		});
@@ -61,7 +61,7 @@ export class LoggerService {
 		console.log(log);
 	}
 
-	public createLog(header: string, options: ILogger): string {
+	private _createLog(header: string, options: ILogger): string {
 		const chalkWholeLine = options.chalkWholeLine || chalk;
 		const chalkTimestamp = options.chalkTimestamp || chalk;
 		const chalkHeader = options.chalkHeader || chalk;
@@ -70,7 +70,7 @@ export class LoggerService {
 
 		return chalkWholeLine(
 			oneLine(
-				`${chalkTimestamp(this.getTimestamp())}
+				`${chalkTimestamp(this._getTimestamp())}
 				- [${chalkHeader(header)}][${chalkContext(options.context)}]
 				- ${chalkMessage(options.message)}`
 			)
@@ -81,7 +81,7 @@ export class LoggerService {
 		return this._logHistory;
 	}
 
-	public getTimestamp(): string {
+	private _getTimestamp(): string {
 		return timestamp(`HH:mm:ss.ms`);
 	}
 }

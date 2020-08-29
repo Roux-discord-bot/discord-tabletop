@@ -5,6 +5,33 @@ import _ from "lodash";
 import timestamp from "time-stamp";
 import { ILogger } from "./logger-interface";
 
+export interface ILoggerConfig {
+	/**
+	 * @default true
+	 */
+	debug?: boolean;
+
+	/**
+	 * @default true
+	 */
+	info?: boolean;
+
+	/**
+	 * @default true
+	 */
+	success?: boolean;
+
+	/**
+	 * @default true
+	 */
+	warn?: boolean;
+
+	/**
+	 * @default true
+	 */
+	error?: boolean;
+}
+
 export class LoggerService {
 	private static _instance: LoggerService;
 
@@ -17,36 +44,55 @@ export class LoggerService {
 
 	private _logHistory: string[] = [];
 
+	private _loggerConfig: ILoggerConfig = {
+		debug: true,
+		info: true,
+		success: true,
+		warn: true,
+		error: true,
+	};
+
+	public async init(config: ILoggerConfig): Promise<void> {
+		this._loggerConfig = {
+			...this._loggerConfig,
+			...config,
+		};
+	}
+
 	public debug(options: ILogger): void {
-		this.log(`DEBUG`, options);
+		if (this._loggerConfig.debug) this.log(`DEBUG`, options);
 	}
 
 	public info(options: ILogger): void {
-		this.log(`INFO`, {
-			chalkHeader: chalk.blueBright,
-			...options,
-		});
+		if (this._loggerConfig.info)
+			this.log(`INFO`, {
+				chalkHeader: chalk.blueBright,
+				...options,
+			});
 	}
 
 	public success(options: ILogger): void {
-		this.log(`SUCCESS`, {
-			chalkHeader: chalk.green,
-			...options,
-		});
+		if (this._loggerConfig.success)
+			this.log(`SUCCESS`, {
+				chalkHeader: chalk.green,
+				...options,
+			});
 	}
 
 	public warn(options: ILogger): void {
-		this.log(`WARN`, {
-			chalkHeader: chalk.bold.yellow,
-			...options,
-		});
+		if (this._loggerConfig.warn)
+			this.log(`WARN`, {
+				chalkHeader: chalk.bold.yellow,
+				...options,
+			});
 	}
 
 	public error(options: ILogger): void {
-		this.log(`ERROR`, {
-			chalkHeader: chalk.bold.red,
-			...options,
-		});
+		if (this._loggerConfig.error)
+			this.log(`ERROR`, {
+				chalkHeader: chalk.bold.red,
+				...options,
+			});
 	}
 
 	public log(header: string, options: ILogger): void {

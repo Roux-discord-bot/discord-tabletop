@@ -29,15 +29,13 @@ async function main(): Promise<void> {
 				.getRepository()
 				.all()
 				.map(value => value.constructor.name);
-			console.log(`events :`);
-			console.log(events);
+			console.log(`events : [${events.join(`, `)}]`);
 
 			const commands = DiscordCommandService.getInstance()
 				.getRepository()
 				.all()
 				.map(value => value.constructor.name);
-			console.log(`commands :`);
-			console.log(commands);
+			console.log(`commands : [${commands.join(`, `)}]`);
 		})
 		.catch(error => {
 			console.error(error);

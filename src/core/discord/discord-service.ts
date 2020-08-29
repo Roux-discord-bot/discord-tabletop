@@ -20,6 +20,7 @@ export class DiscordService {
 	public async start(config: IDiscordConfig): Promise<void> {
 		return Promise.resolve() // Just to keep each init lined up
 			.then(() => DiscordConfigService.getInstance().init(config))
+			.then(() => LoggerService.getInstance().init(config))
 			.then(() => DiscordEventService.getInstance().init(config))
 			.then(() => DiscordCommandService.getInstance().init(config))
 			.then(() => DiscordAuthenticationService.getInstance().init(config))

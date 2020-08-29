@@ -1,5 +1,7 @@
+import { ClientOptions } from "discord.js";
 import _ from "lodash";
 import { DiscordClient } from "../classes/discord-client";
+import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
 export class DiscordClientService {
 	private static _instance: DiscordClientService;
@@ -13,8 +15,14 @@ export class DiscordClientService {
 		return DiscordClientService._instance;
 	}
 
+	private _clientOptions: ClientOptions = {};
+
+	public async init(config: IDiscordConfig): Promise<void> {
+		if (config.client) this._clientOptions = config.client;
+	}
+
 	private _createClient(): DiscordClient {
-		this._client = new DiscordClient();
+		this._client = new DiscordClient(this._clientOptions);
 
 		return this._client;
 	}

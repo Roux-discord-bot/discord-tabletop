@@ -18,7 +18,7 @@ export class DiscordConfigService {
 		this._config = config;
 	}
 
-	public get(key: keyof IDiscordConfig): string {
+	public get<K extends keyof IDiscordConfig>(key: K): IDiscordConfig[K] {
 		return this._config[key];
 	}
 

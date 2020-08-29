@@ -1,8 +1,11 @@
-import { ILoggerConfig } from "src/core/utils/logger/logger-service";
+import { ClientOptions } from "discord.js";
+import { ILoggerTypes } from "src/core/utils/logger/logger-interface";
 
-export interface IDiscordConfig extends ILoggerConfig {
+export interface IDiscordConfig {
 	discordToken: string;
 	events: string;
 	prefix: string;
 	commands: string;
+	client?: ClientOptions;
+	logger?: ILoggerTypes;
 }

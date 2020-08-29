@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import { CustomEvents } from "../../interfaces/event-constants";
+import { CustomEvents } from "../../interfaces/event-interface";
 
 export class DiscordClient extends Client {
 	public on<K extends keyof CustomEvents>(

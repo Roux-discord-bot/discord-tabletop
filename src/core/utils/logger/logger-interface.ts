@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-export interface ILogger {
+export interface ILogConfig {
 	context: string;
 	message: string;
 	/**
@@ -12,4 +12,31 @@ export interface ILogger {
 	chalkHeader?: chalk.Chalk;
 	chalkContext?: chalk.Chalk;
 	chalkMessage?: chalk.Chalk;
+}
+
+export interface ILoggerTypes {
+	/**
+	 * @default true
+	 */
+	debug?: boolean;
+
+	/**
+	 * @default true
+	 */
+	info?: boolean;
+
+	/**
+	 * @default true
+	 */
+	success?: boolean;
+
+	/**
+	 * @default true
+	 */
+	warn?: boolean;
+
+	/**
+	 * @default true
+	 */
+	error?: boolean;
 }

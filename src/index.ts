@@ -23,6 +23,9 @@ async function main(): Promise<void> {
 			commands: path.join(__dirname, `commands`),
 			prefix: `!`,
 			discordToken: config.parsed.DISCORD_TOKEN,
+			logger: {
+				debug: false,
+			},
 		})
 		.then(() => {
 			const events = DiscordEventService.getInstance()

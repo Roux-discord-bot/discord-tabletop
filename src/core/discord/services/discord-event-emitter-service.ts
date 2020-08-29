@@ -1,5 +1,6 @@
 import { ClientEvents } from "discord.js";
 import _ from "lodash";
+import { CustomEvents } from "src/core/constants/event-constants";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "./discord-client-service";
 
@@ -13,13 +14,13 @@ export class DiscordEventEmitterService {
 		return DiscordEventEmitterService._instance;
 	}
 
-	public async emit<K extends keyof ClientEvents>(
+	public async emit<K extends keyof CustomEvents>(
 		event: K,
-		...args: ClientEvents[K]
+		...args: CustomEvents[K]
 	): Promise<void>;
 
 	public async emit<S extends string | symbol>(
-		event: Exclude<S, keyof ClientEvents>,
+		event: Exclude<S, keyof CustomEvents>,
 		...args: unknown[]
 	): Promise<void>;
 

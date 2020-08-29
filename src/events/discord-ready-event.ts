@@ -1,8 +1,8 @@
 import { DiscordClient } from "src/core/discord/classes/discord-client";
-import { DiscordEventHandler } from "../core/discord/features/discord-event-handler";
+import { DiscordEventHandler } from "../core/discord/classes/discord-event-handler";
 import { LoggerService } from "../core/utils/logger/logger-service";
 
-export class DiscordOnReadyEvent extends DiscordEventHandler {
+export class DiscordReadyEvent extends DiscordEventHandler {
 	public async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`ready`, () => {
 			LoggerService.getInstance().info({

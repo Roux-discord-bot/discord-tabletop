@@ -5,7 +5,7 @@ import { LoggerService } from "../../utils/logger/logger-service";
 import {
 	DiscordCommandData,
 	DiscordCommandHandler,
-} from "../features/discord-command-handler";
+} from "../classes/discord-command-handler";
 
 export class DiscordCommandRepository extends Repository<
 	DiscordCommandHandler

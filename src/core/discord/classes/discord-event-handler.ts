@@ -1,4 +1,4 @@
-import { DiscordClient } from "../classes/discord-client";
+import { DiscordClient } from "./discord-client";
 
 export abstract class DiscordEventHandler {
 	public abstract async assignEventsToClient(

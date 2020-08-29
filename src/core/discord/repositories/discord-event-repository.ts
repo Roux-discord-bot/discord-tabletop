@@ -1,6 +1,6 @@
 import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
 import { DiscordEventHandler } from "../classes/discord-event-handler";
-import { Repository } from "../../features/repository";
+import { Repository } from "../../classes/repository";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "../services/discord-client-service";
 import { DiscordClient } from "../classes/discord-client";

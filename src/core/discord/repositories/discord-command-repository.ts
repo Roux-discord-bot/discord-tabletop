@@ -1,5 +1,5 @@
 import { oneLine } from "common-tags";
-import { Repository } from "../../features/repository";
+import { Repository } from "../../classes/repository";
 import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
 import { LoggerService } from "../../utils/logger/logger-service";
 import {

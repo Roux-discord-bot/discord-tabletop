@@ -1,6 +1,5 @@
-import { ClientEvents } from "discord.js";
 import _ from "lodash";
-import { CustomEvents } from "src/core/constants/event-constants";
+import { CustomEvents } from "src/core/interfaces/event-constants";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "./discord-client-service";
 

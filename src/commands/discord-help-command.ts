@@ -1,5 +1,5 @@
 import { EmbedFieldData, Message } from "discord.js";
-import { DiscordEmbed } from "../core/discord/embeds/discord-embed";
+import { DiscordEmbed } from "../core/discord/classes/discord-embed";
 import { DiscordCommand } from "../core/discord/classes/discord-command";
 
 export class DiscordHelpCommand extends DiscordCommand {

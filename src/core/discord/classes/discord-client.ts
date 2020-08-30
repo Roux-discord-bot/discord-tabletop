@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import { CustomEvents } from "../../interfaces/event-interface";
+import { CustomEvents } from "../../interfaces/custom-events-interface";
 import { IDiscordClientOptions } from "../interfaces/discord-client-options-interface";
 
 export class DiscordClient extends Client {

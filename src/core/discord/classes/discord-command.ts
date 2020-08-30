@@ -1,22 +1,15 @@
 import { Message } from "discord.js";
+import { IDiscordCommandData } from "../interfaces/discord-command-data-interface";
 import { DiscordCommandService } from "../services/discord-command-service";
-
-export interface DiscordCommandData {
-	name: string;
-	description: string;
-	aliases: string[];
-}
-
-export type DiscordCommandOptions = Partial<DiscordCommandData>;
 
 export abstract class DiscordCommand {
 	protected readonly _commandService: DiscordCommandService;
 
 	protected readonly _command: string;
 
-	protected readonly _data: Readonly<DiscordCommandData>;
+	protected readonly _data: Readonly<IDiscordCommandData>;
 
-	constructor(command: string, options: DiscordCommandOptions) {
+	constructor(command: string, options: Partial<IDiscordCommandData>) {
 		this._commandService = DiscordCommandService.getInstance();
 		this._command = command;
 		this._data = {
@@ -39,7 +32,7 @@ export abstract class DiscordCommand {
 		return Array<string>(this.getCommand(), ...this.getData().aliases);
 	}
 
-	public getData(): DiscordCommandData {
+	public getData(): IDiscordCommandData {
 		return this._data;
 	}
 

@@ -1,7 +1,7 @@
 import { ClientEvents, Message } from "discord.js";
-import { DiscordCommandHandler } from "../discord/classes/discord-command-handler";
+import { DiscordCommand } from "../discord/classes/discord-command";
 
 export interface CustomEvents extends ClientEvents {
 	unknownCommand: [Message];
-	commandError: [DiscordCommandHandler, Message, Error];
+	commandError: [DiscordCommand, Message, Error];
 }

@@ -9,7 +9,7 @@ export interface DiscordCommandData {
 
 export type DiscordCommandOptions = Partial<DiscordCommandData>;
 
-export abstract class DiscordCommandHandler {
+export abstract class DiscordCommand {
 	protected readonly _commandService: DiscordCommandService;
 
 	protected readonly _command: string;

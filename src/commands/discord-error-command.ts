@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
 import { DiscordEventEmitterService } from "../core/discord/services/discord-event-emitter-service";
-import { DiscordCommandHandler } from "../core/discord/classes/discord-command-handler";
+import { DiscordCommand } from "../core/discord/classes/discord-command";
 
-export class DiscordErrorCommand extends DiscordCommandHandler {
+export class DiscordErrorCommand extends DiscordCommand {
 	constructor() {
 		super(`error`, {
 			description: `An easy way to test the commandError event`,

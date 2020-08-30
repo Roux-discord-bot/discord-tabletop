@@ -1,12 +1,12 @@
 import { Message, User } from "discord.js";
 import { LoggerService } from "../../utils/logger/logger-service";
-import { DiscordEventHandler } from "./discord-event-handler";
+import { DiscordEvent } from "./discord-event";
 import { DiscordClient } from "./discord-client";
 import { DiscordClientService } from "../services/discord-client-service";
-import { DiscordCommandHandler } from "./discord-command-handler";
+import { DiscordCommand } from "./discord-command";
 import { DiscordEmbed } from "../embeds/discord-embed";
 
-export class DiscordCommandErrorEvent extends DiscordEventHandler {
+export class DiscordCommandErrorEvent extends DiscordEvent {
 	public async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`commandError`, async (commandHandler, message, error) => {
 			LoggerService.getInstance().error({
@@ -33,7 +33,7 @@ export class DiscordCommandErrorEvent extends DiscordEventHandler {
 
 	private _sendChannel(
 		message: Message,
-		commandHandler: DiscordCommandHandler,
+		commandHandler: DiscordCommand,
 		owner: User
 	) {
 		message.channel.send(
@@ -46,7 +46,7 @@ export class DiscordCommandErrorEvent extends DiscordEventHandler {
 
 	private _sendOwner(
 		owner: User,
-		commandHandler: DiscordCommandHandler,
+		commandHandler: DiscordCommand,
 		message: Message,
 		error: Error
 	) {

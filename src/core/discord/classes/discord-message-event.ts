@@ -2,9 +2,9 @@ import { Message } from "discord.js";
 import { DiscordCommandService } from "../services/discord-command-service";
 import { DiscordConfigService } from "../services/discord-config-service";
 import { DiscordClient } from "./discord-client";
-import { DiscordEventHandler } from "./discord-event-handler";
+import { DiscordEvent } from "./discord-event";
 
-export class DiscordMessageEvent extends DiscordEventHandler {
+export class DiscordMessageEvent extends DiscordEvent {
 	public async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`message`, async message => {
 			await this._onMessage(message);

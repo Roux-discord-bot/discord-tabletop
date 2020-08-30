@@ -1,8 +1,8 @@
 import { EmbedFieldData, Message } from "discord.js";
 import { DiscordEmbed } from "../core/discord/embeds/discord-embed";
-import { DiscordCommandHandler } from "../core/discord/classes/discord-command-handler";
+import { DiscordCommand } from "../core/discord/classes/discord-command";
 
-export class DiscordHelpCommand extends DiscordCommandHandler {
+export class DiscordHelpCommand extends DiscordCommand {
 	constructor() {
 		super(`help`, {
 			description: `Sends a pm about all the available commands`,
@@ -30,9 +30,7 @@ export class DiscordHelpCommand extends DiscordCommandHandler {
 			});
 	}
 
-	private _mapperCommandToFieldData(
-		command: DiscordCommandHandler
-	): EmbedFieldData {
+	private _mapperCommandToFieldData(command: DiscordCommand): EmbedFieldData {
 		return {
 			name: `${command.getName()}`,
 			value: [

@@ -1,8 +1,8 @@
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClient } from "./discord-client";
-import { DiscordEventHandler } from "./discord-event-handler";
+import { DiscordEvent } from "./discord-event";
 
-export class DiscordLogEvent extends DiscordEventHandler {
+export class DiscordLogEvent extends DiscordEvent {
 	public async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client
 			.on(`debug`, message => {

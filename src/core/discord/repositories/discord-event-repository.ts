@@ -1,18 +1,18 @@
 import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
-import { DiscordEventHandler } from "../classes/discord-event-handler";
+import { DiscordEvent } from "../classes/discord-event";
 import { Repository } from "../../classes/repository";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "../services/discord-client-service";
 import { DiscordClient } from "../classes/discord-client";
 
-export class DiscordEventRepository extends Repository<DiscordEventHandler> {
+export class DiscordEventRepository extends Repository<DiscordEvent> {
 	private _isBuilt = false;
 
 	private _client!: DiscordClient;
 
 	public async build(eventsPath: string): Promise<void> {
 		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);
-		const eventHandlers = await getInstancesFromFolder<DiscordEventHandler>(
+		const eventHandlers = await getInstancesFromFolder<DiscordEvent>(
 			eventsPath
 		);
 		this._client = DiscordClientService.getInstance().getClient();
@@ -20,9 +20,7 @@ export class DiscordEventRepository extends Repository<DiscordEventHandler> {
 		this._isBuilt = true;
 	}
 
-	public async registerEventHandler(
-		eventHandler: DiscordEventHandler
-	): Promise<void> {
+	public async registerEventHandler(eventHandler: DiscordEvent): Promise<void> {
 		if (!this._isBuilt)
 			throw new Error(
 				`The repository needs to be built before being fully available !`
@@ -31,7 +29,7 @@ export class DiscordEventRepository extends Repository<DiscordEventHandler> {
 	}
 
 	private async _registerEachEventHandlers(
-		eventHandlers: DiscordEventHandler[]
+		eventHandlers: DiscordEvent[]
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
 			eventHandlers.forEach(eventHandler => {
@@ -42,7 +40,7 @@ export class DiscordEventRepository extends Repository<DiscordEventHandler> {
 	}
 
 	private async _registerEventHandler(
-		eventHandler: DiscordEventHandler
+		eventHandler: DiscordEvent
 	): Promise<void> {
 		if (!this._client)
 			throw new Error(`The Client in the respository is undefined !`);

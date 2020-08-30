@@ -1,16 +1,19 @@
-import { Message, MessageEmbed, User } from "discord.js";
+import { Message, User } from "discord.js";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordEventHandler } from "./discord-event-handler";
 import { DiscordClient } from "./discord-client";
 import { DiscordClientService } from "../services/discord-client-service";
 import { DiscordCommandHandler } from "./discord-command-handler";
+import { DiscordEmbed } from "../embeds/discord-embed";
 
 export class DiscordCommandErrorEvent extends DiscordEventHandler {
 	public async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`commandError`, async (commandHandler, message, error) => {
 			LoggerService.getInstance().error({
 				context: `Event - CommandError`,
-				message: `The command '${commandHandler.getName()}' within the message : "${message}" returned an error : \n${error}`,
+				message: `The command '${commandHandler.getName()}' within the message : "${message}" returned an error :\n${
+					error.stack ? error.stack : error
+				}`,
 			});
 			const owner = await this._fetchOwner(client);
 			this._sendOwner(owner, commandHandler, message, error);
@@ -58,13 +61,16 @@ export class DiscordCommandErrorEvent extends DiscordEventHandler {
 		}
 	}
 
-	public _makeChannelEmbedError(command: string, owner?: string): MessageEmbed {
-		const embed = new MessageEmbed();
+	public _makeChannelEmbedError(
+		command: string,
+		ownerId?: string
+	): DiscordEmbed {
+		const embed = new DiscordEmbed();
 		embed
 			.setColor(`RED`)
 			.setTitle(`Command error !`)
 			.setDescription(`An error on the command ${command} occured.`);
-		if (owner) embed.addField(`Seek help ?`, `You can ask <@${owner}> !`);
+		if (ownerId) embed.addField(`Seek help ?`, `You can ask <@${ownerId}> !`);
 
 		return embed;
 	}
@@ -73,8 +79,8 @@ export class DiscordCommandErrorEvent extends DiscordEventHandler {
 		command: string,
 		message: string,
 		error?: Error
-	): MessageEmbed {
-		const embed = new MessageEmbed();
+	): DiscordEmbed {
+		const embed = new DiscordEmbed();
 		embed
 			.setColor(`RED`)
 			.setTitle(`Command Error !`)

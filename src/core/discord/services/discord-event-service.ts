@@ -1,8 +1,8 @@
 import _ from "lodash";
-import { DiscordLogEvent } from "../classes/discord-log-event";
+import { DiscordLogEvent } from "../events/discord-log-event";
 import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordEventRepository } from "../repositories/discord-event-repository";
-import { DiscordCommandErrorEvent } from "../classes/discord-command-error-event";
+import { DiscordCommandErrorEvent } from "../events/discord-command-error-event";
 
 export class DiscordEventService {
 	private static _instance: DiscordEventService;

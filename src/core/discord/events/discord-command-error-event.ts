@@ -1,9 +1,9 @@
 import { Message, User } from "discord.js";
 import { LoggerService } from "../../utils/logger/logger-service";
-import { DiscordEvent } from "./discord-event";
-import { DiscordClient } from "./discord-client";
+import { DiscordEvent } from "../classes/discord-event";
+import { DiscordClient } from "../classes/discord-client";
 import { DiscordClientService } from "../services/discord-client-service";
-import { DiscordCommand } from "./discord-command";
+import { DiscordCommand } from "../classes/discord-command";
 import { DiscordEmbed } from "../embeds/discord-embed";
 
 export class DiscordCommandErrorEvent extends DiscordEvent {

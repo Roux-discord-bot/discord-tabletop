@@ -1,28 +1,22 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-console */
-import dotenv from "dotenv";
+import dotenv, { DotenvParseOutput } from "dotenv";
 import path from "path";
 import { exit } from "process";
 import { DiscordService } from "./core/discord/discord-service";
 import { DiscordCommandService } from "./core/discord/services/discord-command-service";
 import { DiscordEventService } from "./core/discord/services/discord-event-service";
+import langs from "./core/utils/langs";
 
-async function main(): Promise<void> {
-	const config = dotenv.config();
-
-	if (config.error) {
-		throw config.error;
-	}
-
-	if (!config.parsed) {
-		throw new Error(`FATAL error, cannot load the .env`);
-	}
+async function main(config: DotenvParseOutput): Promise<void> {
+	await langs.init(path.join(__dirname, `langs`));
 
 	await DiscordService.getInstance()
 		.start({
 			events: path.join(__dirname, `events`),
 			commands: path.join(__dirname, `commands`),
 			prefix: `!`,
-			discordToken: config.parsed.DISCORD_TOKEN,
+			discordToken: config.DISCORD_TOKEN,
 			logger: {
 				debug: false,
 			},
@@ -31,17 +25,7 @@ async function main(): Promise<void> {
 			},
 		})
 		.then(() => {
-			const events = DiscordEventService.getInstance()
-				.getRepository()
-				.all()
-				.map(value => value.constructor.name);
-			console.log(`events : [${events.join(`, `)}]`);
-
-			const commands = DiscordCommandService.getInstance()
-				.getRepository()
-				.all()
-				.map(value => value.constructor.name);
-			console.log(`commands : [${commands.join(`, `)}]`);
+			printEventsAndCommands();
 		})
 		.catch(error => {
 			console.error(error);
@@ -49,4 +33,28 @@ async function main(): Promise<void> {
 		});
 }
 
-main();
+function printEventsAndCommands() {
+	const events = DiscordEventService.getInstance()
+		.getRepository()
+		.all()
+		.map(value => value.constructor.name);
+	console.log(`events : [${events.join(`, `)}]`);
+
+	const commands = DiscordCommandService.getInstance()
+		.getRepository()
+		.all()
+		.map(value => value.constructor.name);
+	console.log(`commands : [${commands.join(`, `)}]`);
+}
+
+const dotenvConfig = dotenv.config();
+
+if (dotenvConfig.error) {
+	throw dotenvConfig.error;
+}
+
+if (!dotenvConfig.parsed) {
+	throw new Error(`FATAL error, cannot load the .env`);
+}
+
+main(dotenvConfig.parsed);

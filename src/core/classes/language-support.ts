@@ -1,10 +1,5 @@
 import _ from "lodash";
 import { LoggerService } from "../utils/logger/logger-service";
-import { ILanguageKeys } from "../interfaces/language-keys-interface";
-
-export type ITranslateKeys = {
-	[key in keyof ILanguageKeys]: string;
-};
 
 export class LanguageSupport {
 	private static _instance: LanguageSupport;
@@ -18,15 +13,21 @@ export class LanguageSupport {
 
 	private readonly _defaultLanguage = `en`;
 
-	private _langJson!: ITranslateKeys;
+	private _langJson: { [key: string]: string } = {};
 
 	private _initialized = false;
 
 	private _path = ``;
 
-	public async init(path: string): Promise<void> {
+	/**
+	 *
+	 * @param path The absolute path to the folder where the .json are
+	 * @param languages The language to translate to.
+	 * "en" if nothing's specified
+	 */
+	public async init(path: string, languages?: string): Promise<void> {
 		this._path = path;
-		return this.setLang().then(() => {
+		return this.setLang(languages).then(() => {
 			this._initialized = true;
 		});
 	}
@@ -49,16 +50,13 @@ export class LanguageSupport {
 			});
 	}
 
-	public lang<K extends keyof ILanguageKeys>(
-		key: K,
-		args?: ILanguageKeys[K]
-	): string {
+	public lang(key: string, args?: { [key: string]: string }): string {
 		if (!this._initialized) return key;
 		const message = this._langJson[key];
 		if (message === undefined) {
 			LoggerService.getInstance().error({
 				context: `LanguageSupport`,
-				message: `:langs(), tried to access the key [${key}] but it dos not exist`,
+				message: `:langs(), tried to access the key [${key}] but it does not exist`,
 			});
 		}
 		return this._format(message, args);
@@ -66,7 +64,7 @@ export class LanguageSupport {
 
 	private _format(message: string, args?: { [key: string]: string }) {
 		if (args === undefined) return message;
-		return message.replace(/{(\w+)}/g, (match, word) => {
+		return message.replace(/\${(\w+)}/g, (match, word) => {
 			return typeof args[word] !== `undefined` ? args[word] : match;
 		});
 	}

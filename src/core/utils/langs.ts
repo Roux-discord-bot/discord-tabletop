@@ -1,16 +1,12 @@
 import { LanguageSupport } from "../classes/language-support";
-import { ILanguageKeys } from "../interfaces/language-keys-interface";
 
-export function lang<K extends keyof ILanguageKeys>(
-	key: K,
-	args?: ILanguageKeys[K]
-): string {
+export function lang(key: string, args?: { [key: string]: string }): string {
 	return LanguageSupport.getInstance().lang(key, args);
 }
 
 export default {
-	init: async (path: string): Promise<void> =>
-		LanguageSupport.getInstance().init(path),
+	init: async (path: string, languages?: string): Promise<void> =>
+		LanguageSupport.getInstance().init(path, languages),
 	async setLang(language: string): Promise<void> {
 		return LanguageSupport.getInstance().setLang(language);
 	},

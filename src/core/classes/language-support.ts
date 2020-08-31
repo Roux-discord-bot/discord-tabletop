@@ -5,6 +5,16 @@ import { UnknownObject } from "../utils/constants";
 
 export const DEFAULT_LANGUAGE = `en`;
 
+export const DEFAULT_OPTIONS: LangOptions = {
+	locale: DEFAULT_LANGUAGE,
+	editOnMissing: true,
+};
+
+export type LangOptions = {
+	locale: string;
+	editOnMissing: boolean;
+};
+
 export class LanguageSupport {
 	private static _instance: LanguageSupport;
 
@@ -15,13 +25,13 @@ export class LanguageSupport {
 		return LanguageSupport._instance;
 	}
 
-	private _language = DEFAULT_LANGUAGE;
-
 	private _langJson: UnknownObject = {};
 
 	private _initialized = false;
 
 	private _path = ``;
+
+	private _options: LangOptions = DEFAULT_OPTIONS;
 
 	/**
 	 *
@@ -29,9 +39,16 @@ export class LanguageSupport {
 	 * @param lang The language to translate to.
 	 * "en" if nothing's specified
 	 */
-	public async init(path: string, lang?: string): Promise<void> {
+	public async init(
+		path: string,
+		options?: Partial<LangOptions>
+	): Promise<void> {
+		this._options = {
+			...this._options,
+			...options,
+		};
 		this._path = path;
-		return this.setLang(lang).then(() => {
+		return this.setLang(this._options.locale).then(() => {
 			this._initialized = true;
 		});
 	}
@@ -42,7 +59,7 @@ export class LanguageSupport {
 		return import(`${this._path}/${language}`)
 			.then(file => {
 				this._langJson = file.default;
-				this._language = language;
+				this._options.locale = language;
 			})
 			.catch(err => {
 				const error: Error = err instanceof Error ? err : new Error(err);
@@ -60,7 +77,7 @@ export class LanguageSupport {
 		const message = this._langJson[key];
 		if (message === undefined) {
 			this._langJson[key] = key;
-			this._saveLangJson();
+			if (this._options.editOnMissing) this._saveLangJson();
 			return key;
 		}
 		return this._format(message, args);
@@ -68,7 +85,7 @@ export class LanguageSupport {
 
 	private _saveLangJson() {
 		fs.writeFile(
-			`${this._path}/${this._language}.json`,
+			`${this._path}/${this._options.locale}.json`,
 			JSON.stringify(this._langJson, undefined, 2),
 			err => {
 				if (err) {

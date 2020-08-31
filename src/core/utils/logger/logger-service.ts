@@ -1,6 +1,5 @@
 /* eslint-disable class-methods-use-this */
 import chalk from "chalk";
-import { oneLine } from "common-tags";
 import _ from "lodash";
 import timestamp from "time-stamp";
 import { IDiscordConfig } from "../../discord/interfaces/discord-config-interface";

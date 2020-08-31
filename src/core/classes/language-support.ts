@@ -48,14 +48,14 @@ export class LanguageSupport {
 			...options,
 		};
 		this._path = path;
-		return this.setLang(this._options.locale).then(() => {
+		return this.setLocale(this._options.locale).then(() => {
 			this._initialized = true;
 		});
 	}
 
-	public async setLang(lang?: string): Promise<void> {
+	public async setLocale(locale?: string): Promise<void> {
 		// eslint-disable-next-line no-param-reassign
-		const language = lang !== undefined ? lang : DEFAULT_LANGUAGE;
+		const language = locale !== undefined ? locale : DEFAULT_LANGUAGE;
 		return import(`${this._path}/${language}`)
 			.then(file => {
 				this._langJson = file.default;
@@ -72,7 +72,7 @@ export class LanguageSupport {
 			});
 	}
 
-	public lang(key: string, args?: UnknownObject): string {
+	public trans(key: string, args?: UnknownObject): string {
 		if (!this._initialized) return key;
 		const message = this._langJson[key];
 		if (message === undefined) {

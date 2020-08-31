@@ -1,5 +1,9 @@
 import _ from "lodash";
+import fs from "fs";
 import { LoggerService } from "../utils/logger/logger-service";
+import { UnknownObject } from "../utils/constants";
+
+export const DEFAULT_LANGUAGE = `en`;
 
 export class LanguageSupport {
 	private static _instance: LanguageSupport;
@@ -11,9 +15,9 @@ export class LanguageSupport {
 		return LanguageSupport._instance;
 	}
 
-	private readonly _defaultLanguage = `en`;
+	private _language = DEFAULT_LANGUAGE;
 
-	private _langJson: { [key: string]: string } = {};
+	private _langJson: UnknownObject = {};
 
 	private _initialized = false;
 
@@ -22,22 +26,23 @@ export class LanguageSupport {
 	/**
 	 *
 	 * @param path The absolute path to the folder where the .json are
-	 * @param languages The language to translate to.
+	 * @param lang The language to translate to.
 	 * "en" if nothing's specified
 	 */
-	public async init(path: string, languages?: string): Promise<void> {
+	public async init(path: string, lang?: string): Promise<void> {
 		this._path = path;
-		return this.setLang(languages).then(() => {
+		return this.setLang(lang).then(() => {
 			this._initialized = true;
 		});
 	}
 
-	public async setLang(language?: string): Promise<void> {
+	public async setLang(lang?: string): Promise<void> {
 		// eslint-disable-next-line no-param-reassign
-		if (language === undefined) language = this._defaultLanguage;
+		const language = lang !== undefined ? lang : DEFAULT_LANGUAGE;
 		return import(`${this._path}/${language}`)
 			.then(file => {
 				this._langJson = file.default;
+				this._language = language;
 			})
 			.catch(err => {
 				const error: Error = err instanceof Error ? err : new Error(err);
@@ -50,19 +55,33 @@ export class LanguageSupport {
 			});
 	}
 
-	public lang(key: string, args?: { [key: string]: string }): string {
+	public lang(key: string, args?: UnknownObject): string {
 		if (!this._initialized) return key;
 		const message = this._langJson[key];
 		if (message === undefined) {
-			LoggerService.getInstance().error({
-				context: `LanguageSupport`,
-				message: `:langs(), tried to access the key [${key}] but it does not exist`,
-			});
+			this._langJson[key] = key;
+			this._saveLangJson();
+			return key;
 		}
 		return this._format(message, args);
 	}
 
-	private _format(message: string, args?: { [key: string]: string }) {
+	private _saveLangJson() {
+		fs.writeFile(
+			`${this._path}/${this._language}.json`,
+			JSON.stringify(this._langJson, undefined, 2),
+			err => {
+				if (err) {
+					LoggerService.getInstance().error({
+						context: `LanguageSupport`,
+						message: `:langs(), an error occured when writing the file to add a key, \n${err}`,
+					});
+				}
+			}
+		);
+	}
+
+	private _format(message: string, args?: UnknownObject) {
 		if (args === undefined) return message;
 		return message.replace(/\${(\w+)}/g, (match, word) => {
 			return typeof args[word] !== `undefined` ? args[word] : match;

@@ -7,7 +7,7 @@ export function lang(key: string, args?: { [key: string]: string }): string {
 export default {
 	init: async (path: string, languages?: string): Promise<void> =>
 		LanguageSupport.getInstance().init(path, languages),
-	async setLang(language: string): Promise<void> {
+	setLang: async (language: string): Promise<void> => {
 		return LanguageSupport.getInstance().setLang(language);
 	},
 	lang,

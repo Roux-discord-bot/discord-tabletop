@@ -3,18 +3,14 @@
 import dotenv, { DotenvParseOutput } from "dotenv";
 import path from "path";
 import { exit } from "process";
-import { DiscordService } from "./core/discord/discord-service";
+import { CoreService } from "./core/core-service";
 import { DiscordCommandService } from "./core/discord/services/discord-command-service";
 import { DiscordEventService } from "./core/discord/services/discord-event-service";
 
 async function main(config: DotenvParseOutput): Promise<void> {
-	await DiscordService.getInstance()
+	await CoreService.getInstance()
 		.start({
 			root: path.join(__dirname),
-			eventsPath: path.join(__dirname, `events`),
-			commandsPath: path.join(__dirname, `commands`),
-			langsPath: path.join(__dirname, `langs`),
-			locale: `en`,
 			prefix: `!`,
 			discordToken: config.DISCORD_TOKEN,
 			logger: {

@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import _ from "lodash";
+import path from "path";
 import langs from "../utils/langs";
 import { LoggerService } from "../utils/logger/logger-service";
 import { IDiscordConfig } from "./interfaces/discord-config-interface";
@@ -20,14 +21,25 @@ export class DiscordService {
 	}
 
 	public async start(config: IDiscordConfig): Promise<void> {
+		const {
+			discordToken,
+			root,
+			client,
+			commandsPath = config.commandsPath || path.join(root, `commands`),
+			eventsPath = config.eventsPath || path.join(root, `events`),
+			langsPath = config.eventsPath || path.join(root, `langs`),
+			locale,
+			logger,
+		} = config;
+
 		return Promise.resolve() // Just to keep each init lined up
-			.then(() => langs.init(config))
 			.then(() => DiscordConfigService.getInstance().init(config))
-			.then(() => LoggerService.getInstance().init(config))
-			.then(() => DiscordClientService.getInstance().init(config))
-			.then(() => DiscordEventService.getInstance().init(config))
-			.then(() => DiscordCommandService.getInstance().init(config))
-			.then(() => DiscordAuthenticationService.getInstance().init(config))
+			.then(() => langs.init(langsPath, locale))
+			.then(() => LoggerService.getInstance().init(logger))
+			.then(() => DiscordClientService.getInstance().init(client))
+			.then(() => DiscordEventService.getInstance().init(eventsPath))
+			.then(() => DiscordCommandService.getInstance().init(commandsPath))
+			.then(() => DiscordAuthenticationService.getInstance().init(discordToken))
 			.then(() => {
 				LoggerService.getInstance().success({
 					context: `DiscordService`,

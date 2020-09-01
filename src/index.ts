@@ -10,9 +10,10 @@ import { DiscordEventService } from "./core/discord/services/discord-event-servi
 async function main(config: DotenvParseOutput): Promise<void> {
 	await DiscordService.getInstance()
 		.start({
-			events: path.join(__dirname, `events`),
-			commands: path.join(__dirname, `commands`),
-			langs: path.join(__dirname, `langs`),
+			root: path.join(__dirname),
+			eventsPath: path.join(__dirname, `events`),
+			commandsPath: path.join(__dirname, `commands`),
+			langsPath: path.join(__dirname, `langs`),
 			locale: `en`,
 			prefix: `!`,
 			discordToken: config.DISCORD_TOKEN,

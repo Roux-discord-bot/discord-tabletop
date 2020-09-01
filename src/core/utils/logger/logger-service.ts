@@ -2,7 +2,6 @@
 import chalk from "chalk";
 import _ from "lodash";
 import timestamp from "time-stamp";
-import { IDiscordConfig } from "../../discord/interfaces/discord-config-interface";
 import { ILogConfig, ILoggerTypes } from "./logger-interface";
 
 export class LoggerService {
@@ -25,11 +24,11 @@ export class LoggerService {
 		error: true,
 	};
 
-	public async init(config: IDiscordConfig): Promise<void> {
-		if (config.logger) {
+	public async init(logger?: ILoggerTypes): Promise<void> {
+		if (logger) {
 			this._loggerConfig = {
 				...this._loggerConfig,
-				...config.logger,
+				...logger,
 			};
 		}
 	}

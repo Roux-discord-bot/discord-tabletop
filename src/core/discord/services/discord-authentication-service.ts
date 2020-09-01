@@ -1,7 +1,6 @@
 import _ from "lodash";
 import { LoggerService } from "../../utils/logger/logger-service";
 import { DiscordClientService } from "./discord-client-service";
-import { IDiscordConfig } from "../interfaces/discord-config-interface";
 
 export class DiscordAuthenticationService {
 	private static _instance: DiscordAuthenticationService;
@@ -14,7 +13,7 @@ export class DiscordAuthenticationService {
 		return DiscordAuthenticationService._instance;
 	}
 
-	public async init({ discordToken }: IDiscordConfig): Promise<void> {
+	public async init(discordToken: string): Promise<void> {
 		return this.login(discordToken);
 	}
 

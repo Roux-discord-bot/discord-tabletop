@@ -2,7 +2,6 @@ import _ from "lodash";
 import { Message } from "discord.js";
 import { DiscordEventService } from "./discord-event-service";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
-import { IDiscordConfig } from "../interfaces/discord-config-interface";
 import { DiscordMessageEvent } from "../events/discord-message-event";
 import { DiscordEventEmitterService } from "./discord-event-emitter-service";
 
@@ -31,7 +30,7 @@ export class DiscordCommandService {
 
 	private readonly _repository = new DiscordCommandRepository();
 
-	public async init({ commands }: IDiscordConfig): Promise<void> {
+	public async init(commands: string): Promise<void> {
 		await this._repository.build(commands);
 		return DiscordEventService.getInstance()
 			.getRepository()

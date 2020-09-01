@@ -3,10 +3,11 @@ import { IDiscordClientOptions } from "./discord-client-options-interface";
 
 export interface IDiscordConfig {
 	discordToken: string;
-	events: string;
 	prefix: string;
-	commands: string;
-	langs: string;
+	root: string;
+	eventsPath?: string;
+	commandsPath?: string;
+	langsPath?: string;
 	locale?: string;
 	client?: IDiscordClientOptions;
 	logger?: ILoggerTypes;

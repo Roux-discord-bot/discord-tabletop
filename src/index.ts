@@ -6,15 +6,14 @@ import { exit } from "process";
 import { DiscordService } from "./core/discord/discord-service";
 import { DiscordCommandService } from "./core/discord/services/discord-command-service";
 import { DiscordEventService } from "./core/discord/services/discord-event-service";
-import langs from "./core/utils/langs";
 
 async function main(config: DotenvParseOutput): Promise<void> {
-	await langs.init(path.join(__dirname, `langs`));
-
 	await DiscordService.getInstance()
 		.start({
 			events: path.join(__dirname, `events`),
 			commands: path.join(__dirname, `commands`),
+			langs: path.join(__dirname, `langs`),
+			locale: `en`,
 			prefix: `!`,
 			discordToken: config.DISCORD_TOKEN,
 			logger: {

@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import _ from "lodash";
+import langs from "../utils/langs";
 import { LoggerService } from "../utils/logger/logger-service";
 import { IDiscordConfig } from "./interfaces/discord-config-interface";
 import { DiscordAuthenticationService } from "./services/discord-authentication-service";
@@ -20,6 +21,7 @@ export class DiscordService {
 
 	public async start(config: IDiscordConfig): Promise<void> {
 		return Promise.resolve() // Just to keep each init lined up
+			.then(() => langs.init(config))
 			.then(() => DiscordConfigService.getInstance().init(config))
 			.then(() => LoggerService.getInstance().init(config))
 			.then(() => DiscordClientService.getInstance().init(config))

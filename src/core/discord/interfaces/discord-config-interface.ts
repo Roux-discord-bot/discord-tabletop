@@ -6,6 +6,8 @@ export interface IDiscordConfig {
 	events: string;
 	prefix: string;
 	commands: string;
+	langs: string;
+	locale?: string;
 	client?: IDiscordClientOptions;
 	logger?: ILoggerTypes;
 }

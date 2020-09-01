@@ -7,12 +7,10 @@ export const DEFAULT_LANGUAGE = `en`;
 
 export const DEFAULT_OPTIONS: LangOptions = {
 	locale: DEFAULT_LANGUAGE,
-	editOnMissing: true,
 };
 
 export type LangOptions = {
 	locale: string;
-	editOnMissing: boolean;
 };
 
 export class LanguageSupport {
@@ -77,7 +75,7 @@ export class LanguageSupport {
 		const message = this._langJson[key];
 		if (message === undefined) {
 			this._langJson[key] = key;
-			if (this._options.editOnMissing) this._saveLangJson();
+			this._saveLangJson();
 			return key;
 		}
 		return this._format(message, args);

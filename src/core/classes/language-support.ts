@@ -1,7 +1,7 @@
 import _ from "lodash";
 import fs from "fs";
 import { LoggerService } from "../utils/logger/logger-service";
-import { UnknownObject } from "../utils/constants";
+import { UnknownObject } from "../utils/types";
 
 export const DEFAULT_LANGUAGE = `en`;
 
@@ -65,7 +65,7 @@ export class LanguageSupport {
 				const error: Error = err instanceof Error ? err : new Error(err);
 				LoggerService.getInstance().error({
 					context: `LanguageSupport`,
-					message: `Couldn't load properly the selected language '${language}'.\n[Reason] : ${
+					message: `Couldn't load properly the selected locale '${language}'.\n[Reason] : ${
 						error.stack ? error.stack : err
 					}`,
 				});

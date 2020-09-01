@@ -1,5 +1,5 @@
-import { ColorResolvable, MessageEmbed, MessageEmbedOptions } from "discord.js";
-import { resolveColor, IColors } from "../../utils/colors";
+import { MessageEmbed, MessageEmbedOptions } from "discord.js";
+import { resolveColor, Colors, ColorResolvable } from "../../utils/colors";
 
 export class DiscordEmbed extends MessageEmbed {
 	constructor(data?: MessageEmbed | MessageEmbedOptions) {
@@ -10,9 +10,9 @@ export class DiscordEmbed extends MessageEmbed {
 			.setTimestamp();
 	}
 
-	public setColor(color: keyof IColors): this;
+	public setColor(color: Colors): this;
 
-	public setColor(color: ColorResolvable): this;
+	public setColor<T extends ColorResolvable>(color: Exclude<T, Colors>): this;
 
 	public setColor(color: ColorResolvable): this {
 		super.setColor(resolveColor(color));

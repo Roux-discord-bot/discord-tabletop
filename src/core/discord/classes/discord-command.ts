@@ -18,6 +18,7 @@ export abstract class DiscordCommand {
 			aliases: [],
 			guildOnly: false,
 			cooldown: 1,
+			permissions: [],
 			...options,
 		};
 	}

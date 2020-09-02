@@ -5,5 +5,6 @@ export interface CustomEvents extends ClientEvents {
 	unknownCommand: [Message];
 	guildOnlyInDm: [Message, DiscordCommand];
 	commandInCooldown: [Message, DiscordCommand];
+	commandNotAllowed: [Message, DiscordCommand];
 	commandError: [DiscordCommand, Message, Error];
 }

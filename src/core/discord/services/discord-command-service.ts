@@ -54,6 +54,18 @@ export class DiscordCommandService {
 			);
 			return false;
 		}
+		if (
+			message.member &&
+			!message.member.hasPermission(command.getData().permissions)
+		) {
+			await DiscordEventEmitterService.getInstance().emit(
+				`commandNotAllowed`,
+				message,
+				command
+			);
+			return false;
+		}
+
 		return true;
 	}
 

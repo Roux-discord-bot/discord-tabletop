@@ -1,11 +1,12 @@
 import _ from "lodash";
-import { Message } from "discord.js";
+import { GuildMember, Message } from "discord.js";
 import { DiscordEventService } from "./discord-event-service";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
 import { DiscordMessageEvent } from "../events/discord-message-event";
 import { DiscordEventEmitterService } from "./discord-event-emitter-service";
 import { DiscordCommand } from "../classes/discord-command";
 import { CustomEvents } from "../../interfaces/custom-events-interface";
+import { IDiscordCommandData } from "../interfaces/discord-command-data-interface";
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
@@ -44,12 +45,19 @@ export class DiscordCommandService {
 			await this._emit(`commandInCooldown`, message, command);
 			return false;
 		}
-		if (!message.member?.hasPermission(command.getData().permissions)) {
+		if (!this._hasPermission(message, command.getData())) {
 			await this._emit(`commandNotAllowed`, message, command);
 			return false;
 		}
 
 		return true;
+	}
+
+	private _hasPermission(
+		{ member }: Message,
+		{ permissions }: IDiscordCommandData
+	) {
+		return member && member.hasPermission(permissions);
 	}
 
 	public async _emit<K extends keyof CustomEvents>(

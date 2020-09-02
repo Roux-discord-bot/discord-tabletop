@@ -45,7 +45,7 @@ export class DiscordCommandService {
 			await this._emit(`commandInCooldown`, message, command);
 			return false;
 		}
-		if (!this._hasPermission(message, command.getData())) {
+		if (!this._hasPermission(message, command.data)) {
 			await this._emit(`commandNotAllowed`, message, command);
 			return false;
 		}

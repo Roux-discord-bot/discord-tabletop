@@ -39,7 +39,7 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 		if (!timestamp) return false;
 
 		const now = Date.now();
-		const cooldownAmount = command.getData().cooldown * 1000;
+		const cooldownAmount = command.data.cooldown * 1000;
 		const expirationTime = timestamp + cooldownAmount;
 		return now < expirationTime;
 	}
@@ -52,7 +52,7 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 
 	public getCommandsData(): Readonly<IDiscordCommandData[]> {
 		return this.all().map(command => {
-			return command.getData();
+			return command.data;
 		});
 	}
 

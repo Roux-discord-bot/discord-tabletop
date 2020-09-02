@@ -34,7 +34,7 @@ export class DiscordHelpCommand extends DiscordCommand {
 		return {
 			name: `${command.getName()}`,
 			value: [
-				`${command.getData().description}`,
+				`${command.data.description}`,
 				`[${command.getCallnames().join(`, `)}]`,
 			],
 		};

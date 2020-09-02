@@ -36,10 +36,10 @@ export abstract class DiscordCommand {
 	}
 
 	public getCallnames(): string[] {
-		return Array<string>(this.getCommand(), ...this.getData().aliases);
+		return Array<string>(this.getCommand(), ...this.data.aliases);
 	}
 
-	public getData(): IDiscordCommandData {
+	public get data(): IDiscordCommandData {
 		return this._data;
 	}
 

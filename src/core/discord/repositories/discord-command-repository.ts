@@ -11,11 +11,12 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 
 	public async build(commandsPath: string): Promise<void> {
 		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);
-		const commandHandlers = await getInstancesFromFolder<DiscordCommand>(
-			commandsPath
+		return getInstancesFromFolder<DiscordCommand>(commandsPath).then(
+			discordCommands => {
+				this._registerDiscordCommands(discordCommands);
+				this._isBuilt = true;
+			}
 		);
-		this._registerCommandHandlers(commandHandlers);
-		this._isBuilt = true;
 	}
 
 	private _cooldowns = new Collection<string, Collection<string, number>>();
@@ -56,19 +57,19 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 		});
 	}
 
-	private _registerCommandHandlers(commandHandlers: DiscordCommand[]) {
-		commandHandlers.forEach(commandHandler => {
-			this._registerCommand(commandHandler);
+	private _registerDiscordCommands(discordCommands: DiscordCommand[]) {
+		discordCommands.forEach(discordCommand => {
+			this._registerDiscordCommand(discordCommand);
 		});
 	}
 
-	private _registerCommand(commandHandler: DiscordCommand): void {
-		const { callnames } = commandHandler;
+	private _registerDiscordCommand(discordCommand: DiscordCommand): void {
+		const { callnames } = discordCommand;
 		if (this._checkCallnamesAreAvailables(callnames)) {
-			this.add(commandHandler);
+			this.add(discordCommand);
 			LoggerService.getInstance().info({
-				context: commandHandler.constructor.name,
-				message: oneLine`Registered command '${commandHandler.name}'
+				context: discordCommand.constructor.name,
+				message: oneLine`Registered command '${discordCommand.name}'
 						with callnames [${callnames.join(`, `)}]`,
 			});
 		}

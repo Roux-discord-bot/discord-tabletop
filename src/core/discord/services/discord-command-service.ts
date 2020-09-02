@@ -5,6 +5,7 @@ import { DiscordCommandRepository } from "../repositories/discord-command-reposi
 import { DiscordMessageEvent } from "../events/discord-message-event";
 import { DiscordEventEmitterService } from "./discord-event-emitter-service";
 import { DiscordCommand } from "../classes/discord-command";
+import { CustomEvents } from "../../interfaces/custom-events-interface";
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
@@ -32,41 +33,30 @@ export class DiscordCommandService {
 		command?: DiscordCommand
 	): Promise<boolean> {
 		if (!command) {
-			await DiscordEventEmitterService.getInstance().emit(
-				`unknownCommand`,
-				message
-			);
+			await this._emit(`unknownCommand`, message);
 			return false;
 		}
 		if (this._isGuildOnlyCommandNotCalledInGuild(command, message)) {
-			await DiscordEventEmitterService.getInstance().emit(
-				`guildOnlyInDm`,
-				message,
-				command
-			);
+			await this._emit(`guildOnlyInDm`, message, command);
 			return false;
 		}
 		if (this._repository.isCommandOnCooldown(command, message)) {
-			await DiscordEventEmitterService.getInstance().emit(
-				`commandInCooldown`,
-				message,
-				command
-			);
+			await this._emit(`commandInCooldown`, message, command);
 			return false;
 		}
-		if (
-			message.member &&
-			!message.member.hasPermission(command.getData().permissions)
-		) {
-			await DiscordEventEmitterService.getInstance().emit(
-				`commandNotAllowed`,
-				message,
-				command
-			);
+		if (!message.member?.hasPermission(command.getData().permissions)) {
+			await this._emit(`commandNotAllowed`, message, command);
 			return false;
 		}
 
 		return true;
+	}
+
+	public async _emit<K extends keyof CustomEvents>(
+		event: K,
+		...args: CustomEvents[K]
+	): Promise<void> {
+		return DiscordEventEmitterService.getInstance().emit(event, ...args);
 	}
 
 	private _isGuildOnlyCommandNotCalledInGuild(

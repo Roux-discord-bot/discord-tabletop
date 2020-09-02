@@ -13,11 +13,7 @@ export class DiscordClient extends Client {
 	public getOption<K extends keyof IDiscordClientOptions>(
 		key: K
 	): IDiscordClientOptions[K] {
-		return this.getOptions()[key];
-	}
-
-	public getOptions(): Readonly<IDiscordClientOptions> {
-		return this._options;
+		return this._options[key];
 	}
 
 	public on<K extends keyof CustomEvents>(

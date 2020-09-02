@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { GuildMember, Message } from "discord.js";
+import { Message } from "discord.js";
 import { DiscordEventService } from "./discord-event-service";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
 import { DiscordMessageEvent } from "../events/discord-message-event";

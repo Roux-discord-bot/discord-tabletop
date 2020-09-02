@@ -14,7 +14,7 @@ export class DiscordEventRepository extends Repository<DiscordEvent> {
 		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);
 		return getInstancesFromFolder<DiscordEvent>(eventsPath).then(
 			async discordEvents => {
-				this._client = DiscordClientService.getInstance().getClient();
+				this._client = DiscordClientService.INSTANCE.client;
 				return this._registerEachDiscordEvent(discordEvents).then(() => {
 					this._isBuilt = true;
 				});
@@ -48,7 +48,7 @@ export class DiscordEventRepository extends Repository<DiscordEvent> {
 			throw new Error(`The Client in the respository is undefined !`);
 		discordEvent.buildEventsForClient(this._client).then(() => {
 			this.add(discordEvent);
-			LoggerService.getInstance().info({
+			LoggerService.INSTANCE.info({
 				context: `DiscordEventRepository`,
 				message: `${discordEvent.constructor.name} successfully assigned to the Discord client`,
 			});

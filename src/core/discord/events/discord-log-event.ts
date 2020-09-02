@@ -6,19 +6,19 @@ export class DiscordLogEvent extends DiscordEvent {
 	protected async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client
 			.on(`debug`, message => {
-				LoggerService.getInstance().debug({
+				LoggerService.INSTANCE.debug({
 					context: `Discord`,
 					message,
 				});
 			})
 			.on(`warn`, message => {
-				LoggerService.getInstance().warn({
+				LoggerService.INSTANCE.warn({
 					context: `Discord`,
 					message,
 				});
 			})
 			.on(`error`, ({ message }) => {
-				LoggerService.getInstance().error({
+				LoggerService.INSTANCE.error({
 					context: `Discord`,
 					message,
 				});

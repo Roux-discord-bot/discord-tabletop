@@ -7,7 +7,7 @@ export class DiscordClientService {
 
 	private _client: DiscordClient | undefined = undefined;
 
-	public static getInstance(): DiscordClientService {
+	public static get INSTANCE(): DiscordClientService {
 		if (_.isNil(DiscordClientService._instance))
 			DiscordClientService._instance = new DiscordClientService();
 
@@ -26,7 +26,7 @@ export class DiscordClientService {
 		return this._client;
 	}
 
-	public getClient(): DiscordClient {
+	public get client(): DiscordClient {
 		if (_.isNil(this._client)) return this._createClient();
 		return this._client;
 	}

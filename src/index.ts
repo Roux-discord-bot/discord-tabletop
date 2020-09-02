@@ -7,7 +7,7 @@ import { DiscordCommandService } from "./core/discord/services/discord-command-s
 import { DiscordEventService } from "./core/discord/services/discord-event-service";
 
 async function main(config: DotenvParseOutput): Promise<void> {
-	await CoreService.getInstance().start({
+	await CoreService.INSTANCE.start({
 		root: path.join(__dirname),
 		prefix: `!`,
 		discordToken: config.DISCORD_TOKEN,
@@ -22,14 +22,12 @@ async function main(config: DotenvParseOutput): Promise<void> {
 }
 
 function printEventsAndCommands() {
-	const events = DiscordEventService.getInstance()
-		.getRepository()
+	const events = DiscordEventService.INSTANCE.repository
 		.all()
 		.map(value => value.constructor.name);
 	console.log(`events : [${events.join(`, `)}]`);
 
-	const commands = DiscordCommandService.getInstance()
-		.getRepository()
+	const commands = DiscordCommandService.INSTANCE.repository
 		.all()
 		.map(value => value.constructor.name);
 	console.log(`commands : [${commands.join(`, `)}]`);

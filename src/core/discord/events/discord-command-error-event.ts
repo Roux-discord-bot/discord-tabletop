@@ -9,7 +9,7 @@ import { DiscordEmbed } from "../classes/discord-embed";
 export class DiscordCommandErrorEvent extends DiscordEvent {
 	protected async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`commandError`, async (command, message, error) => {
-			LoggerService.getInstance().error({
+			LoggerService.INSTANCE.error({
 				context: `Event - CommandError`,
 				message: `The command '${
 					command.name
@@ -24,9 +24,7 @@ export class DiscordCommandErrorEvent extends DiscordEvent {
 	}
 
 	private async _fetchOwner(client: DiscordClient): Promise<User | undefined> {
-		const ownerId = DiscordClientService.getInstance()
-			.getClient()
-			.getOption(`owner`);
+		const ownerId = DiscordClientService.INSTANCE.client.getOption(`owner`);
 		if (!ownerId) return undefined;
 		return client.users.cache.get(ownerId) || client.users.fetch(ownerId);
 	}

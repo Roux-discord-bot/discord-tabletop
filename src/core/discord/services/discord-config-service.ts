@@ -6,7 +6,7 @@ export class DiscordConfigService {
 
 	private _config!: IDiscordConfig;
 
-	public static getInstance(): DiscordConfigService {
+	public static get INSTANCE(): DiscordConfigService {
 		if (_.isNil(DiscordConfigService._instance))
 			DiscordConfigService._instance = new DiscordConfigService();
 		return DiscordConfigService._instance;

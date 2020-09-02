@@ -10,7 +10,7 @@ export abstract class DiscordCommand {
 	public readonly data: Readonly<DiscordCommandData>;
 
 	constructor(command: string, options: Partial<IDiscordCommandData>) {
-		this._commandService = DiscordCommandService.getInstance();
+		this._commandService = DiscordCommandService.INSTANCE;
 		this.data = {
 			name: command[0].toUpperCase() + command.slice(1),
 			command,
@@ -41,7 +41,7 @@ export abstract class DiscordCommand {
 
 	public async executeCommand(message: Message, args: string[]): Promise<void> {
 		await this.handleCommand(message, args);
-		this._commandService.getRepository().commandCalled(this, message);
+		this._commandService.repository.commandCalled(this, message);
 	}
 
 	protected abstract async handleCommand(

@@ -22,12 +22,9 @@ export class DiscordHelpCommand extends DiscordCommand {
 	}
 
 	private _mapperCommandsToFields() {
-		return this._commandService
-			.getRepository()
-			.all()
-			.map(command => {
-				return this._mapperCommandToFieldData(command);
-			});
+		return this._commandService.repository.all().map(command => {
+			return this._mapperCommandToFieldData(command);
+		});
 	}
 
 	private _mapperCommandToFieldData(command: DiscordCommand): EmbedFieldData {

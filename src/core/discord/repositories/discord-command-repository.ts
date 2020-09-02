@@ -67,7 +67,7 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 		const { callnames } = discordCommand;
 		if (this._checkCallnamesAreAvailables(callnames)) {
 			this.add(discordCommand);
-			LoggerService.getInstance().info({
+			LoggerService.INSTANCE.info({
 				context: discordCommand.constructor.name,
 				message: oneLine`Registered command '${discordCommand.name}'
 						with callnames [${callnames.join(`, `)}]`,

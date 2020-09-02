@@ -10,7 +10,7 @@ export class DiscordErrorCommand extends DiscordCommand {
 	}
 
 	protected async handleCommand(message: Message): Promise<void> {
-		DiscordEventEmitterService.getInstance().emit(
+		DiscordEventEmitterService.INSTANCE.emit(
 			`commandError`,
 			this,
 			message,

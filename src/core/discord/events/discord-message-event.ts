@@ -12,12 +12,12 @@ export class DiscordMessageEvent extends DiscordEvent {
 	}
 
 	private async _onMessage(message: Message): Promise<void> {
-		const prefix = DiscordConfigService.getInstance().get(`prefix`);
+		const prefix = DiscordConfigService.INSTANCE.get(`prefix`);
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 		const args = message.content.slice(prefix.length).trim().split(/ +/g);
 		const callname = args.shift()?.toLowerCase();
 		if (!callname) return;
 		// eslint-disable-next-line no-use-before-define
-		await DiscordCommandService.getInstance().call(message, callname, ...args);
+		await DiscordCommandService.INSTANCE.call(message, callname, ...args);
 	}
 }

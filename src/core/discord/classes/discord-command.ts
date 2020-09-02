@@ -2,18 +2,18 @@ import { Message } from "discord.js";
 import { IDiscordCommandData } from "../interfaces/discord-command-data-interface";
 import { DiscordCommandService } from "../services/discord-command-service";
 
+type DiscordCommandData = IDiscordCommandData & { command: string };
+
 export abstract class DiscordCommand {
 	protected readonly _commandService: DiscordCommandService;
 
-	protected readonly _command: string;
-
-	protected readonly _data: Readonly<IDiscordCommandData>;
+	public readonly data: Readonly<DiscordCommandData>;
 
 	constructor(command: string, options: Partial<IDiscordCommandData>) {
 		this._commandService = DiscordCommandService.getInstance();
-		this._command = command;
-		this._data = {
+		this.data = {
 			name: command[0].toUpperCase() + command.slice(1),
+			command,
 			description: ``,
 			aliases: [],
 			guildOnly: false,
@@ -24,23 +24,19 @@ export abstract class DiscordCommand {
 	}
 
 	public isGuildOnly(): boolean {
-		return this._data.guildOnly;
+		return this.data.guildOnly;
 	}
 
-	public getName(): string {
-		return this._data.name;
+	public get name(): string {
+		return this.data.name;
 	}
 
-	public getCommand(): string {
-		return this._command;
+	public get command(): string {
+		return this.data.command;
 	}
 
-	public getCallnames(): string[] {
-		return Array<string>(this.getCommand(), ...this.data.aliases);
-	}
-
-	public get data(): IDiscordCommandData {
-		return this._data;
+	public get callnames(): string[] {
+		return Array<string>(this.command, ...this.data.aliases);
 	}
 
 	public async executeCommand(message: Message, args: string[]): Promise<void> {

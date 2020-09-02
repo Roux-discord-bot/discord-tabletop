@@ -32,10 +32,10 @@ export class DiscordHelpCommand extends DiscordCommand {
 
 	private _mapperCommandToFieldData(command: DiscordCommand): EmbedFieldData {
 		return {
-			name: `${command.getName()}`,
+			name: `${command.name}`,
 			value: [
 				`${command.data.description}`,
-				`[${command.getCallnames().join(`, `)}]`,
+				`[${command.callnames.join(`, `)}]`,
 			],
 		};
 	}

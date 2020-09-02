@@ -1,4 +1,5 @@
 import { oneLine } from "common-tags";
+import { Collection, Message } from "discord.js";
 import { Repository } from "../../classes/repository";
 import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
 import { LoggerService } from "../../utils/logger/logger-service";
@@ -15,6 +16,32 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 		);
 		this._registerCommandHandlers(commandHandlers);
 		this._isBuilt = true;
+	}
+
+	private _cooldowns = new Collection<string, Collection<string, number>>();
+
+	public commandCalled(command: DiscordCommand, message: Message): void {
+		if (!this._cooldowns.has(command.getName())) {
+			this._cooldowns.set(command.getName(), new Collection());
+		}
+		const timestamps = this._cooldowns.get(command.getName());
+		if (timestamps) timestamps.set(message.author.id, Date.now());
+	}
+
+	public isCommandOnCooldown(
+		command: DiscordCommand,
+		message: Message
+	): boolean {
+		const timestamps = this._cooldowns.get(command.getName());
+		if (!timestamps) return false;
+
+		const timestamp = timestamps.get(message.author.id);
+		if (!timestamp) return false;
+
+		const now = Date.now();
+		const cooldownAmount = command.getData().cooldown * 1000;
+		const expirationTime = timestamp + cooldownAmount;
+		return now < expirationTime;
 	}
 
 	public getCommand(callname: string): DiscordCommand | undefined {
@@ -37,26 +64,26 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 
 	private _registerCommand(commandHandler: DiscordCommand): void {
 		const callnames = commandHandler.getCallnames();
-		this._checkCallnamesAreAvailables(callnames);
-		this.add(commandHandler);
-		LoggerService.getInstance().info({
-			context: commandHandler.constructor.name,
-			message: oneLine`Registered command '${commandHandler.getName()}'
-					with callnames [${callnames.join(`, `)}]`,
-		});
+		if (this._checkCallnamesAreAvailables(callnames)) {
+			this.add(commandHandler);
+			LoggerService.getInstance().info({
+				context: commandHandler.constructor.name,
+				message: oneLine`Registered command '${commandHandler.getName()}'
+						with callnames [${callnames.join(`, `)}]`,
+			});
+		}
 	}
 
-	private _checkCallnamesAreAvailables(callnames: string[]): void {
+	private _checkCallnamesAreAvailables(callnames: string[]): boolean {
 		const assigned = this._useTakenCallname(callnames);
-		if (!assigned) return;
+		if (!assigned) return true;
 		const callname = assigned
 			.getCallnames()
 			.find(cname => callnames.includes(cname));
-		if (assigned)
-			throw new Error(
-				oneLine`The registry already contains the command
+		throw new Error(
+			oneLine`The registry already contains the command
 				[${assigned.getName()}] using the same callname '${callname}'`
-			);
+		);
 	}
 
 	private _useTakenCallname(callnames: string[]): DiscordCommand | undefined {

@@ -10,7 +10,7 @@ export class DiscordHelpCommand extends DiscordCommand {
 		});
 	}
 
-	public async handleCommand(message: Message): Promise<void> {
+	protected async handleCommand(message: Message): Promise<void> {
 		const embed = new DiscordEmbed()
 			.setTitle(`Available commands`)
 			.setDescription(`Show all the available commands`);

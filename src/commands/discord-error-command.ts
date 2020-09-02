@@ -9,7 +9,7 @@ export class DiscordErrorCommand extends DiscordCommand {
 		});
 	}
 
-	public async handleCommand(message: Message): Promise<void> {
+	protected async handleCommand(message: Message): Promise<void> {
 		DiscordEventEmitterService.getInstance().emit(
 			`commandError`,
 			this,

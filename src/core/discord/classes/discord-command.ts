@@ -17,6 +17,7 @@ export abstract class DiscordCommand {
 			description: ``,
 			aliases: [],
 			guildOnly: false,
+			cooldown: 1,
 			...options,
 		};
 	}
@@ -41,7 +42,12 @@ export abstract class DiscordCommand {
 		return this._data;
 	}
 
-	public abstract async handleCommand(
+	public async executeCommand(message: Message, args: string[]): Promise<void> {
+		await this.handleCommand(message, args);
+		this._commandService.getRepository().commandCalled(this, message);
+	}
+
+	protected abstract async handleCommand(
 		message: Message,
 		args: string[]
 	): Promise<void>;

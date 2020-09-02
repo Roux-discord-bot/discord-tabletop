@@ -10,7 +10,7 @@ export class DiscordGuildOnlyCommand extends DiscordCommand {
 		});
 	}
 
-	public async handleCommand(message: Message): Promise<void> {
+	protected async handleCommand(message: Message): Promise<void> {
 		message.channel.send(`You can't do this command in DMs right !?`);
 	}
 }

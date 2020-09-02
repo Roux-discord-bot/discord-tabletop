@@ -3,4 +3,5 @@ export interface IDiscordCommandData {
 	description: string;
 	aliases: string[];
 	guildOnly: boolean;
+	cooldown: number;
 }

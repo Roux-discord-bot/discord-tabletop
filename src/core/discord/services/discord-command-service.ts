@@ -22,17 +22,39 @@ export class DiscordCommandService {
 		...args: string[]
 	): Promise<void> {
 		const command = this._repository.getCommand(callname);
+		this._canBeExecuted(message, command).then(async condition => {
+			if (condition && command) await command.executeCommand(message, args);
+		});
+	}
+
+	private async _canBeExecuted(
+		message: Message,
+		command?: DiscordCommand
+	): Promise<boolean> {
 		if (!command) {
-			DiscordEventEmitterService.getInstance().emit(`unknownCommand`, message);
-		} else if (this._isGuildOnlyCommandNotCalledInGuild(command, message)) {
-			DiscordEventEmitterService.getInstance().emit(
+			await DiscordEventEmitterService.getInstance().emit(
+				`unknownCommand`,
+				message
+			);
+			return false;
+		}
+		if (this._isGuildOnlyCommandNotCalledInGuild(command, message)) {
+			await DiscordEventEmitterService.getInstance().emit(
 				`guildOnlyInDm`,
 				message,
 				command
 			);
-		} else {
-			await command.handleCommand(message, args);
+			return false;
 		}
+		if (this._repository.isCommandOnCooldown(command, message)) {
+			await DiscordEventEmitterService.getInstance().emit(
+				`commandInCooldown`,
+				message,
+				command
+			);
+			return false;
+		}
+		return true;
 	}
 
 	private _isGuildOnlyCommandNotCalledInGuild(

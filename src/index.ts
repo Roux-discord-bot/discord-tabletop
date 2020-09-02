@@ -49,7 +49,7 @@ if (dotenvConfig.error) {
 	throw dotenvConfig.error;
 }
 
-if (!dotenvConfig.parsed) {
+if (!dotenvConfig.parsed || Object.keys(dotenvConfig.parsed).length === 0) {
 	throw new Error(`FATAL error, cannot load the .env`);
 }
 

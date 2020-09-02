@@ -16,25 +16,23 @@ export class DiscordCommandErrorEvent extends DiscordEvent {
 				}`,
 			});
 			const owner = await this._fetchOwner(client);
-			this._sendOwner(owner, commandHandler, message, error);
+			if (owner) this._sendOwner(owner, commandHandler, message, error);
 			this._sendChannel(message, commandHandler, owner);
 		});
 	}
 
-	private async _fetchOwner(client: DiscordClient) {
+	private async _fetchOwner(client: DiscordClient): Promise<User | undefined> {
 		const ownerId = DiscordClientService.getInstance()
 			.getClient()
 			.getOption(`owner`);
-		const owner = await client.users.fetch(
-			ownerId || `Please specify an owner to handle the commandError case`
-		);
-		return owner;
+		if (!ownerId) return undefined;
+		return client.users.cache.get(ownerId) || client.users.fetch(ownerId);
 	}
 
 	private _sendChannel(
 		message: Message,
 		commandHandler: DiscordCommand,
-		owner: User
+		owner?: User
 	) {
 		message.channel.send(
 			this._makeChannelEmbedError(

@@ -3,7 +3,7 @@ import { DiscordClient } from "../classes/discord-client";
 import { DiscordEvent } from "../classes/discord-event";
 
 export class DiscordLogEvent extends DiscordEvent {
-	public async assignEventsToClient(client: DiscordClient): Promise<void> {
+	protected async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client
 			.on(`debug`, message => {
 				LoggerService.getInstance().debug({

@@ -80,7 +80,7 @@ export class DiscordCommandService {
 		await this._repository.build(commands);
 		return DiscordEventService.getInstance()
 			.getRepository()
-			.registerEventHandler(new DiscordMessageEvent());
+			.registerDiscordEvent(new DiscordMessageEvent());
 	}
 
 	public getRepository(): DiscordCommandRepository {

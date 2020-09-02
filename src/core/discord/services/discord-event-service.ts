@@ -17,8 +17,8 @@ export class DiscordEventService {
 
 	public async init(events: string): Promise<void> {
 		await this._repository.build(events);
-		await this.getRepository().registerEventHandler(new DiscordLogEvent());
-		await this.getRepository().registerEventHandler(
+		await this.getRepository().registerDiscordEvent(new DiscordLogEvent());
+		await this.getRepository().registerDiscordEvent(
 			new DiscordCommandErrorEvent()
 		);
 	}

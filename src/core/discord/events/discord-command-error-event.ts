@@ -7,7 +7,7 @@ import { DiscordCommand } from "../classes/discord-command";
 import { DiscordEmbed } from "../classes/discord-embed";
 
 export class DiscordCommandErrorEvent extends DiscordEvent {
-	public async assignEventsToClient(client: DiscordClient): Promise<void> {
+	protected async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`commandError`, async (command, message, error) => {
 			LoggerService.getInstance().error({
 				context: `Event - CommandError`,

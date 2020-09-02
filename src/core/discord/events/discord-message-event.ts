@@ -5,7 +5,7 @@ import { DiscordClient } from "../classes/discord-client";
 import { DiscordEvent } from "../classes/discord-event";
 
 export class DiscordMessageEvent extends DiscordEvent {
-	public async assignEventsToClient(client: DiscordClient): Promise<void> {
+	protected async assignEventsToClient(client: DiscordClient): Promise<void> {
 		client.on(`message`, async message => {
 			await this._onMessage(message);
 		});

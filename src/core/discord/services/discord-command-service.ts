@@ -4,6 +4,7 @@ import { DiscordEventService } from "./discord-event-service";
 import { DiscordCommandRepository } from "../repositories/discord-command-repository";
 import { DiscordMessageEvent } from "../events/discord-message-event";
 import { DiscordEventEmitterService } from "./discord-event-emitter-service";
+import { DiscordCommand } from "../classes/discord-command";
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
@@ -20,12 +21,25 @@ export class DiscordCommandService {
 		callname: string,
 		...args: string[]
 	): Promise<void> {
-		const commandHandler = this._repository.getCommand(callname);
-		if (!commandHandler) {
+		const command = this._repository.getCommand(callname);
+		if (!command) {
 			DiscordEventEmitterService.getInstance().emit(`unknownCommand`, message);
+		} else if (this._isGuildOnlyCommandNotCalledInGuild(command, message)) {
+			DiscordEventEmitterService.getInstance().emit(
+				`guildOnlyInDm`,
+				message,
+				command
+			);
 		} else {
-			await commandHandler.handleCommand(message, args);
+			await command.handleCommand(message, args);
 		}
+	}
+
+	private _isGuildOnlyCommandNotCalledInGuild(
+		command: DiscordCommand,
+		message: Message
+	) {
+		return command.isGuildOnly() && message.channel.type === `dm`;
 	}
 
 	private readonly _repository = new DiscordCommandRepository();

@@ -16,8 +16,13 @@ export abstract class DiscordCommand {
 			name: command[0].toUpperCase() + command.slice(1),
 			description: ``,
 			aliases: [],
+			guildOnly: false,
 			...options,
 		};
+	}
+
+	public isGuildOnly(): boolean {
+		return this._data.guildOnly;
 	}
 
 	public getName(): string {

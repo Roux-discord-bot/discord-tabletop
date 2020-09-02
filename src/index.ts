@@ -2,31 +2,23 @@
 /* eslint-disable no-console */
 import dotenv, { DotenvParseOutput } from "dotenv";
 import path from "path";
-import { exit } from "process";
 import { CoreService } from "./core/core-service";
 import { DiscordCommandService } from "./core/discord/services/discord-command-service";
 import { DiscordEventService } from "./core/discord/services/discord-event-service";
 
 async function main(config: DotenvParseOutput): Promise<void> {
-	await CoreService.getInstance()
-		.start({
-			root: path.join(__dirname),
-			prefix: `!`,
-			discordToken: config.DISCORD_TOKEN,
-			logger: {
-				debug: false,
-			},
-			client: {
-				owner: `230336648942977024`,
-			},
-		})
-		.then(() => {
-			printEventsAndCommands();
-		})
-		.catch(error => {
-			console.error(error);
-			exit(1);
-		});
+	await CoreService.getInstance().start({
+		root: path.join(__dirname),
+		prefix: `!`,
+		discordToken: config.DISCORD_TOKEN,
+		logger: {
+			debug: false,
+		},
+		client: {
+			owner: `230336648942977024`,
+		},
+	});
+	printEventsAndCommands();
 }
 
 function printEventsAndCommands() {

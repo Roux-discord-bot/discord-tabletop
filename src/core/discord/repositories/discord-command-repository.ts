@@ -2,10 +2,8 @@ import { oneLine } from "common-tags";
 import { Repository } from "../../classes/repository";
 import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
 import { LoggerService } from "../../utils/logger/logger-service";
-import {
-	IDiscordCommandData,
-	DiscordCommand,
-} from "../classes/discord-command";
+import { DiscordCommand } from "../classes/discord-command";
+import { IDiscordCommandData } from "../interfaces/discord-command-data-interface";
 
 export class DiscordCommandRepository extends Repository<DiscordCommand> {
 	private _isBuilt = false;

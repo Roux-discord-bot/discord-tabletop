@@ -6,12 +6,11 @@ import { DiscordMessageEvent } from "../events/discord-message-event";
 import { DiscordEventEmitterService } from "./discord-event-emitter-service";
 import { DiscordCommand } from "../classes/discord-command";
 import { CustomEvents } from "../../interfaces/custom-events-interface";
-import { IDiscordCommandData } from "../interfaces/discord-command-data-interface";
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
 
-	public static getInstance(): DiscordCommandService {
+	public static get INSTANCE(): DiscordCommandService {
 		if (_.isNil(DiscordCommandService._instance))
 			DiscordCommandService._instance = new DiscordCommandService();
 
@@ -23,7 +22,7 @@ export class DiscordCommandService {
 		callname: string,
 		...args: string[]
 	): Promise<void> {
-		const command = this._repository.getCommand(callname);
+		const command = this.repository.getCommand(callname);
 		this._canBeExecuted(message, command).then(async condition => {
 			if (condition && command) await command.executeCommand(message, args);
 		});
@@ -41,11 +40,12 @@ export class DiscordCommandService {
 			await this._emit(`guildOnlyInDm`, message, command);
 			return false;
 		}
-		if (this._repository.isCommandOnCooldown(command, message)) {
+		if (this.repository.isCommandOnCooldown(command, message)) {
 			await this._emit(`commandInCooldown`, message, command);
 			return false;
 		}
-		if (!this._hasPermission(message, command.getData())) {
+		const { member } = message;
+		if (member && !member.hasPermission(command.data.permissions)) {
 			await this._emit(`commandNotAllowed`, message, command);
 			return false;
 		}
@@ -53,37 +53,27 @@ export class DiscordCommandService {
 		return true;
 	}
 
-	private _hasPermission(
-		{ member }: Message,
-		{ permissions }: IDiscordCommandData
-	) {
-		return member && member.hasPermission(permissions);
-	}
-
 	public async _emit<K extends keyof CustomEvents>(
 		event: K,
 		...args: CustomEvents[K]
 	): Promise<void> {
-		return DiscordEventEmitterService.getInstance().emit(event, ...args);
+		return DiscordEventEmitterService.INSTANCE.emit(event, ...args);
 	}
 
 	private _isGuildOnlyCommandNotCalledInGuild(
 		command: DiscordCommand,
 		message: Message
 	) {
-		return command.isGuildOnly() && message.channel.type === `dm`;
+		return command.isGuildOnly() && message.guild === null;
 	}
 
-	private readonly _repository = new DiscordCommandRepository();
+	public readonly repository = new DiscordCommandRepository();
 
 	public async init(commands: string): Promise<void> {
-		await this._repository.build(commands);
-		return DiscordEventService.getInstance()
-			.getRepository()
-			.registerEventHandler(new DiscordMessageEvent());
-	}
-
-	public getRepository(): DiscordCommandRepository {
-		return this._repository;
+		return this.repository.build(commands).then(() => {
+			DiscordEventService.INSTANCE.repository.registerDiscordEvent(
+				new DiscordMessageEvent()
+			);
+		});
 	}
 }

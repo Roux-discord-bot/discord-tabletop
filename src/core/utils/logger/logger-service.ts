@@ -7,7 +7,7 @@ import { ILogConfig, ILoggerTypes } from "./logger-interface";
 export class LoggerService {
 	private static _instance: LoggerService;
 
-	public static getInstance(): LoggerService {
+	public static get INSTANCE(): LoggerService {
 		if (_.isNil(LoggerService._instance))
 			LoggerService._instance = new LoggerService();
 

@@ -7,7 +7,7 @@ export class DiscordAuthenticationService {
 
 	private _authenticated = false;
 
-	public static getInstance(): DiscordAuthenticationService {
+	public static get INSTANCE(): DiscordAuthenticationService {
 		if (_.isNil(DiscordAuthenticationService._instance))
 			DiscordAuthenticationService._instance = new DiscordAuthenticationService();
 		return DiscordAuthenticationService._instance;
@@ -18,18 +18,17 @@ export class DiscordAuthenticationService {
 	}
 
 	public async login(token: string): Promise<void> {
-		LoggerService.getInstance().info({
+		LoggerService.INSTANCE.info({
 			context: `DiscordAuthenticationService`,
 			message: `The bot is logging in . . .`,
 		});
-		return DiscordClientService.getInstance()
-			.getClient()
+		return DiscordClientService.INSTANCE.client
 			.login(token)
 			.then(() => {
 				this._authenticated = true;
 			})
 			.catch(err => {
-				LoggerService.getInstance().error({
+				LoggerService.INSTANCE.error({
 					context: `DiscordAuthenticationService`,
 					message: `The bot could not log in, reason : ${err}`,
 				});

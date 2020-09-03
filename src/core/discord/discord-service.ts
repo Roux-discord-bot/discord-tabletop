@@ -11,7 +11,7 @@ import { DiscordEventService } from "./services/discord-event-service";
 export class DiscordService {
 	private static _instance: DiscordService;
 
-	public static getInstance(): DiscordService {
+	public static get INSTANCE(): DiscordService {
 		if (_.isNil(DiscordService._instance))
 			DiscordService._instance = new DiscordService();
 
@@ -28,12 +28,10 @@ export class DiscordService {
 		} = config;
 
 		return Promise.resolve() // Just to keep each init lined up
-			.then(() => DiscordConfigService.getInstance().init(config))
-			.then(() => DiscordClientService.getInstance().init(client))
-			.then(() => DiscordEventService.getInstance().init(eventsPath))
-			.then(() => DiscordCommandService.getInstance().init(commandsPath))
-			.then(() =>
-				DiscordAuthenticationService.getInstance().init(discordToken)
-			);
+			.then(() => DiscordConfigService.INSTANCE.init(config))
+			.then(() => DiscordClientService.INSTANCE.init(client))
+			.then(() => DiscordEventService.INSTANCE.init(eventsPath))
+			.then(() => DiscordCommandService.INSTANCE.init(commandsPath))
+			.then(() => DiscordAuthenticationService.INSTANCE.init(discordToken));
 	}
 }

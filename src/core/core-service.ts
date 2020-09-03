@@ -8,7 +8,7 @@ import { LoggerService } from "./utils/logger/logger-service";
 export class CoreService {
 	private static _instance: CoreService;
 
-	public static getInstance(): CoreService {
+	public static get INSTANCE(): CoreService {
 		if (_.isNil(CoreService._instance))
 			CoreService._instance = new CoreService();
 
@@ -25,17 +25,17 @@ export class CoreService {
 
 		return Promise.resolve() // Just to keep each init lined up
 			.then(() => langs.init(langsPath, locale))
-			.then(() => LoggerService.getInstance().init(logger))
-			.then(() => DiscordService.getInstance().start(config))
+			.then(() => LoggerService.INSTANCE.init(logger))
+			.then(() => DiscordService.INSTANCE.start(config))
 			.then(() => {
-				LoggerService.getInstance().success({
+				LoggerService.INSTANCE.success({
 					context: `CoreService`,
 					message: `All the services started properly.`,
 				});
 			})
 			.catch(err => {
 				const error = err instanceof Error ? err : new Error(err);
-				LoggerService.getInstance().error({
+				LoggerService.INSTANCE.error({
 					context: `CoreService`,
 					message: `At least one service couldn't start, reason : \n${
 						error.stack ? error.stack : error.message

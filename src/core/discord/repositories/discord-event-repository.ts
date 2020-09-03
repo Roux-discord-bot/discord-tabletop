@@ -12,43 +12,46 @@ export class DiscordEventRepository extends Repository<DiscordEvent> {
 
 	public async build(eventsPath: string): Promise<void> {
 		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);
-		const eventHandlers = await getInstancesFromFolder<DiscordEvent>(
-			eventsPath
+		return getInstancesFromFolder<DiscordEvent>(eventsPath).then(
+			async discordEvents => {
+				this._client = DiscordClientService.INSTANCE.client;
+				return this._registerEachDiscordEvent(discordEvents).then(() => {
+					this._isBuilt = true;
+				});
+			}
 		);
-		this._client = DiscordClientService.getInstance().getClient();
-		await this._registerEachEventHandlers(eventHandlers);
-		this._isBuilt = true;
 	}
 
-	public async registerEventHandler(eventHandler: DiscordEvent): Promise<void> {
+	public async registerDiscordEvent(discordEvent: DiscordEvent): Promise<void> {
 		if (!this._isBuilt)
 			throw new Error(
 				`The repository needs to be built before being fully available !`
 			);
-		return this._registerEventHandler(eventHandler);
+		return this._registerDiscordEvent(discordEvent);
 	}
 
-	private async _registerEachEventHandlers(
-		eventHandlers: DiscordEvent[]
+	private async _registerEachDiscordEvent(
+		discordEvents: DiscordEvent[]
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
-			eventHandlers.forEach(eventHandler => {
-				this._registerEventHandler(eventHandler).catch(reject);
+			discordEvents.forEach(discordEvent => {
+				this._registerDiscordEvent(discordEvent).catch(reject);
 			});
 			resolve();
 		});
 	}
 
-	private async _registerEventHandler(
-		eventHandler: DiscordEvent
+	private async _registerDiscordEvent(
+		discordEvent: DiscordEvent
 	): Promise<void> {
 		if (!this._client)
 			throw new Error(`The Client in the respository is undefined !`);
-		await eventHandler.assignEventsToClient(this._client);
-		this.add(eventHandler);
-		LoggerService.getInstance().info({
-			context: `DiscordEventRepository`,
-			message: `${eventHandler.constructor.name} successfully assigned to the Discord client`,
+		discordEvent.buildEventsForClient(this._client).then(() => {
+			this.add(discordEvent);
+			LoggerService.INSTANCE.info({
+				context: `DiscordEventRepository`,
+				message: `${discordEvent.constructor.name} successfully assigned to the Discord client`,
+			});
 		});
 	}
 }

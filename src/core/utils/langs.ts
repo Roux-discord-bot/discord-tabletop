@@ -1,14 +1,14 @@
 import { LanguageSupport } from "../classes/language-support";
 
 export function trans(key: string, args?: { [key: string]: string }): string {
-	return LanguageSupport.getInstance().trans(key, args);
+	return LanguageSupport.INSTANCE.trans(key, args);
 }
 
 export default {
 	init: async (langs: string, locale?: string): Promise<void> =>
-		LanguageSupport.getInstance().init(langs, { locale }),
+		LanguageSupport.INSTANCE.init(langs, { locale }),
 	setLocale: async (locale: string): Promise<void> => {
-		return LanguageSupport.getInstance().setLocale(locale);
+		return LanguageSupport.INSTANCE.setLocale(locale);
 	},
 	trans,
 };

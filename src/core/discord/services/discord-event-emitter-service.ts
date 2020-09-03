@@ -6,7 +6,7 @@ import { DiscordClientService } from "./discord-client-service";
 export class DiscordEventEmitterService {
 	private static _instance: DiscordEventEmitterService;
 
-	public static getInstance(): DiscordEventEmitterService {
+	public static get INSTANCE(): DiscordEventEmitterService {
 		if (_.isNil(DiscordEventEmitterService._instance))
 			DiscordEventEmitterService._instance = new DiscordEventEmitterService();
 
@@ -24,9 +24,9 @@ export class DiscordEventEmitterService {
 	): Promise<void>;
 
 	public async emit(event: string, ...args: unknown[]): Promise<void> {
-		const client = DiscordClientService.getInstance().getClient();
+		const { client } = DiscordClientService.INSTANCE;
 		if (!client) {
-			LoggerService.getInstance().error({
+			LoggerService.INSTANCE.error({
 				context: `DiscordEventEmitterService`,
 				message: `Got an undefined client while trying to emit '${event}'`,
 			});
@@ -34,12 +34,12 @@ export class DiscordEventEmitterService {
 		}
 		// Returns true if the event had listeners, false otherwise.
 		if (client.emit(event, ...args)) {
-			LoggerService.getInstance().debug({
+			LoggerService.INSTANCE.debug({
 				context: `DiscordEventEmitterService`,
 				message: `The event '${event}' was emitted`,
 			});
 		} else {
-			LoggerService.getInstance().warn({
+			LoggerService.INSTANCE.warn({
 				context: `DiscordEventEmitterService`,
 				message: `The event '${event}' was emitted but has no listener`,
 			});

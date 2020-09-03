@@ -11,20 +11,21 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 
 	public async build(commandsPath: string): Promise<void> {
 		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);
-		const commandHandlers = await getInstancesFromFolder<DiscordCommand>(
-			commandsPath
+		return getInstancesFromFolder<DiscordCommand>(commandsPath).then(
+			discordCommands => {
+				this._registerDiscordCommands(discordCommands);
+				this._isBuilt = true;
+			}
 		);
-		this._registerCommandHandlers(commandHandlers);
-		this._isBuilt = true;
 	}
 
 	private _cooldowns = new Collection<string, Collection<string, number>>();
 
 	public commandCalled(command: DiscordCommand, message: Message): void {
-		if (!this._cooldowns.has(command.getName())) {
-			this._cooldowns.set(command.getName(), new Collection());
+		if (!this._cooldowns.has(command.name)) {
+			this._cooldowns.set(command.name, new Collection());
 		}
-		const timestamps = this._cooldowns.get(command.getName());
+		const timestamps = this._cooldowns.get(command.name);
 		if (timestamps) timestamps.set(message.author.id, Date.now());
 	}
 
@@ -32,65 +33,63 @@ export class DiscordCommandRepository extends Repository<DiscordCommand> {
 		command: DiscordCommand,
 		message: Message
 	): boolean {
-		const timestamps = this._cooldowns.get(command.getName());
+		const timestamps = this._cooldowns.get(command.name);
 		if (!timestamps) return false;
 
 		const timestamp = timestamps.get(message.author.id);
 		if (!timestamp) return false;
 
 		const now = Date.now();
-		const cooldownAmount = command.getData().cooldown * 1000;
+		const cooldownAmount = command.data.cooldown * 1000;
 		const expirationTime = timestamp + cooldownAmount;
 		return now < expirationTime;
 	}
 
 	public getCommand(callname: string): DiscordCommand | undefined {
 		return this.all().find(value => {
-			return value.getCallnames().includes(callname);
+			return value.callnames.includes(callname);
 		});
 	}
 
 	public getCommandsData(): Readonly<IDiscordCommandData[]> {
 		return this.all().map(command => {
-			return command.getData();
+			return command.data;
 		});
 	}
 
-	private _registerCommandHandlers(commandHandlers: DiscordCommand[]) {
-		commandHandlers.forEach(commandHandler => {
-			this._registerCommand(commandHandler);
+	private _registerDiscordCommands(discordCommands: DiscordCommand[]) {
+		discordCommands.forEach(discordCommand => {
+			this._registerDiscordCommand(discordCommand);
 		});
 	}
 
-	private _registerCommand(commandHandler: DiscordCommand): void {
-		const callnames = commandHandler.getCallnames();
+	private _registerDiscordCommand(discordCommand: DiscordCommand): void {
+		const { callnames } = discordCommand;
 		if (this._checkCallnamesAreAvailables(callnames)) {
-			this.add(commandHandler);
-			LoggerService.getInstance().info({
-				context: commandHandler.constructor.name,
-				message: oneLine`Registered command '${commandHandler.getName()}'
+			this.add(discordCommand);
+			LoggerService.INSTANCE.info({
+				context: discordCommand.constructor.name,
+				message: oneLine`Registered command '${discordCommand.name}'
 						with callnames [${callnames.join(`, `)}]`,
 			});
 		}
 	}
 
 	private _checkCallnamesAreAvailables(callnames: string[]): boolean {
-		const assigned = this._useTakenCallname(callnames);
-		if (!assigned) return true;
-		const callname = assigned
-			.getCallnames()
-			.find(cname => callnames.includes(cname));
+		const commandUsingCallname = this._useTakenCallname(callnames);
+		if (!commandUsingCallname) return true;
+		const callname = commandUsingCallname.callnames.find(cname =>
+			callnames.includes(cname)
+		);
 		throw new Error(
 			oneLine`The registry already contains the command
-				[${assigned.getName()}] using the same callname '${callname}'`
+				[${commandUsingCallname.name}] using the same callname '${callname}'`
 		);
 	}
 
 	private _useTakenCallname(callnames: string[]): DiscordCommand | undefined {
 		return this.all().find(value => {
-			return value
-				.getCallnames()
-				.some(callname => callnames.includes(callname));
+			return value.callnames.some(callname => callnames.includes(callname));
 		});
 	}
 }

@@ -7,54 +7,47 @@ import { DiscordCommand } from "../classes/discord-command";
 import { DiscordEmbed } from "../classes/discord-embed";
 
 export class DiscordCommandErrorEvent extends DiscordEvent {
-	public async assignEventsToClient(client: DiscordClient): Promise<void> {
-		client.on(`commandError`, async (commandHandler, message, error) => {
-			LoggerService.getInstance().error({
+	protected async assignEventsToClient(client: DiscordClient): Promise<void> {
+		client.on(`commandError`, async (command, message, error) => {
+			LoggerService.INSTANCE.error({
 				context: `Event - CommandError`,
-				message: `The command '${commandHandler.getName()}' within the message : "${message}" returned an error :\n${
+				message: `The command '${
+					command.name
+				}' within the message : "${message}" returned an error :\n${
 					error.stack ? error.stack : error
 				}`,
 			});
 			const owner = await this._fetchOwner(client);
-			if (owner) this._sendOwner(owner, commandHandler, message, error);
-			this._sendChannel(message, commandHandler, owner);
+			if (owner) this._sendOwner(owner, command, message, error);
+			this._sendChannel(message, command, owner);
 		});
 	}
 
 	private async _fetchOwner(client: DiscordClient): Promise<User | undefined> {
-		const ownerId = DiscordClientService.getInstance()
-			.getClient()
-			.getOption(`owner`);
+		const ownerId = DiscordClientService.INSTANCE.client.getOption(`owner`);
 		if (!ownerId) return undefined;
 		return client.users.cache.get(ownerId) || client.users.fetch(ownerId);
 	}
 
 	private _sendChannel(
 		message: Message,
-		commandHandler: DiscordCommand,
+		command: DiscordCommand,
 		owner?: User
 	) {
 		message.channel.send(
-			this._makeChannelEmbedError(
-				commandHandler.getCommand(),
-				owner ? owner.id : undefined
-			)
+			this._makeChannelEmbedError(command.command, owner ? owner.id : undefined)
 		);
 	}
 
 	private _sendOwner(
 		owner: User,
-		commandHandler: DiscordCommand,
+		command: DiscordCommand,
 		message: Message,
 		error: Error
 	) {
 		if (owner) {
 			owner.send(
-				this._makeOwnerEmbedError(
-					commandHandler.getCommand(),
-					message.content,
-					error
-				)
+				this._makeOwnerEmbedError(command.command, message.content, error)
 			);
 		}
 	}

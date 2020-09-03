@@ -16,7 +16,7 @@ export type LangOptions = {
 export class LanguageSupport {
 	private static _instance: LanguageSupport;
 
-	public static getInstance(): LanguageSupport {
+	public static get INSTANCE(): LanguageSupport {
 		if (_.isNil(LanguageSupport._instance))
 			LanguageSupport._instance = new LanguageSupport();
 
@@ -61,7 +61,7 @@ export class LanguageSupport {
 			})
 			.catch(err => {
 				const error: Error = err instanceof Error ? err : new Error(err);
-				LoggerService.getInstance().error({
+				LoggerService.INSTANCE.error({
 					context: `LanguageSupport`,
 					message: `Couldn't load properly the selected locale '${language}'.\n[Reason] : ${
 						error.stack ? error.stack : err
@@ -87,7 +87,7 @@ export class LanguageSupport {
 			JSON.stringify(this._langJson, undefined, 2),
 			err => {
 				if (err) {
-					LoggerService.getInstance().error({
+					LoggerService.INSTANCE.error({
 						context: `LanguageSupport`,
 						message: `:langs(), an error occured when writing the file to add a key, \n${err}`,
 					});

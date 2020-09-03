@@ -24,7 +24,7 @@ export class DiscordCommandService {
 	): Promise<void> {
 		const command = this.repository.getCommand(callname);
 		this._canBeExecuted(message, command).then(async condition => {
-			if (condition && command) await command.executeCommand(message, args);
+			if (condition && command) await command.executeCommand(message, ...args);
 		});
 	}
 

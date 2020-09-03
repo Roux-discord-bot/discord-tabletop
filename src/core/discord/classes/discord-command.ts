@@ -39,13 +39,16 @@ export abstract class DiscordCommand {
 		return Array<string>(this.command, ...this.data.aliases);
 	}
 
-	public async executeCommand(message: Message, args: string[]): Promise<void> {
-		await this.handleCommand(message, args);
+	public async executeCommand(
+		message: Message,
+		...args: string[]
+	): Promise<void> {
+		await this.handleCommand(message, ...args);
 		this._commandService.repository.commandCalled(this, message);
 	}
 
 	protected abstract async handleCommand(
 		message: Message,
-		args: string[]
+		...args: string[]
 	): Promise<void>;
 }

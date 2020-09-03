@@ -1,8 +1,7 @@
-import { Client } from "discord.js";
-import { CustomEvents } from "../../interfaces/custom-events-interface";
 import { IDiscordClientOptions } from "../interfaces/discord-client-options-interface";
+import { DiscordBaseClient } from "./discord-base-client";
 
-export class DiscordClient extends Client {
+export class DiscordClient extends DiscordBaseClient {
 	private _options: IDiscordClientOptions = {};
 
 	constructor(options?: IDiscordClientOptions) {
@@ -14,20 +13,5 @@ export class DiscordClient extends Client {
 		key: K
 	): IDiscordClientOptions[K] {
 		return this._options[key];
-	}
-
-	public on<K extends keyof CustomEvents>(
-		event: K,
-		listener: (...args: CustomEvents[K]) => void
-	): this;
-
-	public on<S extends string | symbol>(
-		event: Exclude<S, keyof CustomEvents>,
-		listener: (...args: unknown[]) => void
-	): this;
-
-	public on(event: string, listener: (...args: unknown[]) => void): this {
-		super.on(event, listener);
-		return this;
 	}
 }

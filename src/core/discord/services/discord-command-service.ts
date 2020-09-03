@@ -6,7 +6,6 @@ import { DiscordMessageEvent } from "../events/discord-message-event";
 import { DiscordEventEmitterService } from "./discord-event-emitter-service";
 import { DiscordCommand } from "../classes/discord-command";
 import { CustomEvents } from "../../interfaces/custom-events-interface";
-import { IDiscordCommandData } from "../interfaces/discord-command-data-interface";
 
 export class DiscordCommandService {
 	private static _instance: DiscordCommandService;
@@ -45,19 +44,13 @@ export class DiscordCommandService {
 			await this._emit(`commandInCooldown`, message, command);
 			return false;
 		}
-		if (!this._hasPermission(message, command.data)) {
+		const { member } = message;
+		if (member && !member.hasPermission(command.data.permissions)) {
 			await this._emit(`commandNotAllowed`, message, command);
 			return false;
 		}
 
 		return true;
-	}
-
-	private _hasPermission(
-		{ member }: Message,
-		{ permissions }: IDiscordCommandData
-	) {
-		return member === null || member.hasPermission(permissions);
 	}
 
 	public async _emit<K extends keyof CustomEvents>(

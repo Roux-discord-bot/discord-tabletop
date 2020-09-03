@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { DiscordCommandUtils } from "../core/discord/utils/discord-command-utils";
+import { DiscordUtils, mention } from "../core/discord/utils/discord-utils";
 import { DiscordCommand } from "../core/discord/classes/discord-command";
 
 export class DiscordStrawpollCommand extends DiscordCommand {
@@ -16,12 +16,12 @@ export class DiscordStrawpollCommand extends DiscordCommand {
 		message: Message,
 		...args: string[]
 	): Promise<void> {
-		const strawpoll = `<@${
-			message.author.id
-		}> authored a strawpoll : \n${args.join(` `)}`;
-		message.channel.send(strawpoll).then(sentMessage => {
+		const strawpoll = `${mention(
+			message.author
+		)} requested a Strawpoll : \n${args.join(` `)}`;
+		message.channel.send(strawpoll).then(strawpollMessage => {
 			message.delete().then(() => {
-				DiscordCommandUtils.reactUnordered(sentMessage, `👍`, `👎`, `😀`);
+				DiscordUtils.reacts(strawpollMessage, `👍`, `👎`);
 			});
 		});
 	}

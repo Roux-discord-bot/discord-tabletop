@@ -1,6 +1,6 @@
 import { Message, User } from "discord.js";
 import _ from "lodash";
-import { CommandArgument } from "../core/discord/interfaces/discord-command-data-interface";
+import { DiscordEmbed } from "../core/discord/classes/discord-embed";
 import { DiscordEmojis } from "../core/utils/constants";
 import { DiscordUtils, mention } from "../core/discord/utils/discord-utils";
 import { DiscordCommand } from "../core/discord/classes/discord-command";
@@ -14,7 +14,6 @@ export class DiscordVoteCommand extends DiscordCommand {
 			arguments: [
 				{
 					name: `notify`,
-					mandatory: true,
 				},
 			],
 		});
@@ -24,33 +23,45 @@ export class DiscordVoteCommand extends DiscordCommand {
 		message: Message,
 		...args: string[]
 	): Promise<void> {
-		const strawpoll = `${mention(
-			message.author
-		)} requested a vote : \n${args.join(` `)}`;
-		let timeout = NaN;
-		const notify = this.getArgument(`notify`);
-		if (notify) {
-			timeout = this._notifyArgumentIsValid(message, args);
-			if (_.isNaN(timeout)) return;
+		if (this.hasArgument(`notify`)) {
+			await this._voteAndNotify(message, args);
+		} else {
+			await this._vote(message, args);
 		}
-		this._vote(message, strawpoll, notify, timeout);
 	}
 
-	private _vote(
-		message: Message,
-		strawpoll: string,
-		notify: CommandArgument | undefined,
-		timeout: number
-	) {
-		message.channel.send(strawpoll).then(strawpollMessage => {
-			if (notify) this._notify(message.author, strawpollMessage, timeout);
+	private _makeVoteEmbed(message: Message, args: string[]) {
+		const authorAvatar = message.author.avatarURL();
+		const embed = new DiscordEmbed({ empty: true })
+			.setAuthor(message.author.username, authorAvatar || undefined)
+			.setTitle(`Requested a vote`)
+			.setColor(`BLURPLE`)
+			.setDescription(args.join(` `))
+			.setTimestamp();
+		return embed;
+	}
+
+	private async _vote(message: Message, args: string[]) {
+		const vote = this._makeVoteEmbed(message, args);
+		return message.channel.send(vote).then(voteBotMessage => {
 			message.delete().then(() => {
 				DiscordUtils.reacts(
-					strawpollMessage,
+					voteBotMessage,
 					DiscordEmojis.THUMBS_UP,
 					DiscordEmojis.THUMBS_DOWN
 				);
 			});
+			return voteBotMessage;
+		});
+	}
+
+	private async _voteAndNotify(message: Message, args: string[]) {
+		if (!this._notifyArgumentIsValid(message, args)) return;
+		const argsWithoutNotifyElements = this.removeArgument(`--notify`, args, 1);
+		this._vote(message, argsWithoutNotifyElements).then(voteBotMessage => {
+			const timeout = this._getNotifyTimeout(args);
+			this._notify(message.author, voteBotMessage, timeout);
+			return voteBotMessage;
 		});
 	}
 
@@ -61,7 +72,7 @@ export class DiscordVoteCommand extends DiscordCommand {
 	): Promise<void> {
 		const link = DiscordUtils.getLinkTo(message);
 		setTimeout(() => {
-			message.channel.send(
+			author.send(
 				`${mention(
 					author
 				)} you were asked to be notified after ${timeout} seconds about : \n${link}`
@@ -69,7 +80,7 @@ export class DiscordVoteCommand extends DiscordCommand {
 		}, timeout * 1000);
 	}
 
-	private _notifyArgumentIsValid(message: Message, args: string[]) {
+	private _notifyArgumentIsValid(message: Message, args: string[]): boolean {
 		const index = args.indexOf(`--notify`);
 		if (index + 1 >= args.length) {
 			this._commandService._emit(
@@ -77,17 +88,22 @@ export class DiscordVoteCommand extends DiscordCommand {
 				message,
 				`The --notify argument should be followed by a number !`
 			);
-			return NaN;
+			return false;
 		}
-		const timeout = parseInt(args[index + 1], 10);
+		const timeout = this._getNotifyTimeout(args);
 		if (_.isNaN(timeout)) {
 			this._commandService._emit(
 				`commandWrongArgumentUsage`,
 				message,
 				`The --notify argument should be followed by a number !`
 			);
-			return NaN;
+			return false;
 		}
-		return timeout;
+		return true;
+	}
+
+	private _getNotifyTimeout(args: string[]): number {
+		const index = args.indexOf(`--notify`);
+		return parseInt(args[index + 1], 10);
 	}
 }

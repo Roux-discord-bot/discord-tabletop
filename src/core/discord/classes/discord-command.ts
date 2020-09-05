@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import { Utils } from "../../utils/utils";
 import {
 	CommandArgument,
 	IDiscordCommandData,
@@ -29,13 +30,6 @@ export abstract class DiscordCommand {
 		};
 	}
 
-	private _collectArgument(name: string) {
-		if (this.hasArgument(name)) return;
-
-		const argument = this.data.arguments.find(arg => arg.name === name);
-		if (argument) this._collectedArguments.push(argument);
-	}
-
 	public async executeCommand(
 		message: Message,
 		...args: string[]
@@ -51,30 +45,21 @@ export abstract class DiscordCommand {
 		this._commandService.repository.commandCalled(this, message);
 	}
 
-	private _lackMandatoryArgument(args: string[], message: Message) {
-		const missingMandatoryArgument = this._getUnfullfiledMandatoryArgument(
-			...args
-		);
-		if (missingMandatoryArgument !== undefined) {
-			this._commandService._emit(
-				`commandMandatoryArgumentMissing`,
-				message,
-				missingMandatoryArgument,
-				this
-			);
-			return true;
-		}
-		return false;
-	}
-
-	public _getUnfullfiledMandatoryArgument(
-		...args: string[]
-	): CommandArgument | undefined {
-		return this.data.arguments
-			.filter(argument => {
-				return argument.mandatory === true;
-			})
-			.find(argument => !args.includes(`--${argument.name}`));
+	/**
+	 *
+	 * @param argument The argument to find and use as a starting point
+	 * @param args The array to remove elements from
+	 * @param supplementaryElements
+	 * If you need more than the given argument to be removed
+	 */
+	protected removeArgument(
+		argument: string,
+		args: string[],
+		supplementaryElements?: number
+	): string[] {
+		const index = args.indexOf(argument);
+		if (index === -1) return args;
+		return Utils.removeElementsFromArray(args, index, supplementaryElements);
 	}
 
 	protected abstract async handleCommand(
@@ -104,5 +89,38 @@ export abstract class DiscordCommand {
 
 	public get callnames(): string[] {
 		return Array<string>(this.command, ...this.data.aliases);
+	}
+
+	private _collectArgument(name: string) {
+		if (this.hasArgument(name)) return;
+
+		const argument = this.data.arguments.find(arg => arg.name === name);
+		if (argument) this._collectedArguments.push(argument);
+	}
+
+	private _lackMandatoryArgument(args: string[], message: Message) {
+		const missingMandatoryArgument = this._getUnfullfiledMandatoryArgument(
+			...args
+		);
+		if (missingMandatoryArgument !== undefined) {
+			this._commandService._emit(
+				`commandMandatoryArgumentMissing`,
+				message,
+				missingMandatoryArgument,
+				this
+			);
+			return true;
+		}
+		return false;
+	}
+
+	private _getUnfullfiledMandatoryArgument(
+		...args: string[]
+	): CommandArgument | undefined {
+		return this.data.arguments
+			.filter(argument => {
+				return argument.mandatory === true;
+			})
+			.find(argument => !args.includes(`--${argument.name}`));
 	}
 }

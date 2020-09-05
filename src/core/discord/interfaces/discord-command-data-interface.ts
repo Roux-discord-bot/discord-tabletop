@@ -1,5 +1,10 @@
 import { PermissionString } from "discord.js";
 
+export type CommandArgument = {
+	name: string;
+	mandatory?: boolean;
+};
+
 export interface IDiscordCommandData {
 	name: string;
 	description: string;
@@ -7,4 +12,5 @@ export interface IDiscordCommandData {
 	guildOnly: boolean;
 	cooldown: number;
 	permissions: Array<PermissionString>;
+	arguments: Array<CommandArgument>;
 }

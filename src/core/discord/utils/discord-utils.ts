@@ -20,6 +20,14 @@ export class DiscordUtils {
 			() => message
 		);
 	}
+
+	static getLinkTo(message: Message): string {
+		if (!message || !message.guild) return ``;
+		const guildId = message.guild?.id;
+		const channelId = message.channel.id;
+		const messageId = message.id;
+		return `http://discordapp.com/channels/${guildId}/${channelId}/${messageId}`;
+	}
 }
 
 export function mention(source?: Channel): string;

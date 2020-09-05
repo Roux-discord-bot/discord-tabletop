@@ -31,3 +31,18 @@ export const Colors = {
 	NOT_QUITE_BLACK: 0x23272a,
 	RANDOM: Math.floor(Math.random() * (0xffffff + 1)),
 };
+
+export const DiscordEmojis = {
+	THUMBS_UP: `👍`,
+	THUMBS_DOWN: `👎`,
+	ZERO: `0️⃣`,
+	ONE: `1️⃣`,
+	TWO: `2️⃣`,
+	THREE: `3️⃣`,
+	FOUR: `4️⃣`,
+	FIVE: `5️⃣`,
+	SIX: `6️⃣`,
+	SEVEN: `7️⃣`,
+	EIGHT: `8️⃣`,
+	NINE: `9️⃣`,
+};

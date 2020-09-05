@@ -2,12 +2,14 @@ import { MessageEmbed, MessageEmbedOptions } from "discord.js";
 import { resolveColor, Colors, ColorResolvable } from "../../utils/colors";
 
 export class DiscordEmbed extends MessageEmbed {
-	constructor(data?: MessageEmbed | MessageEmbedOptions) {
+	constructor(data?: MessageEmbedOptions & { empty?: boolean }) {
 		super(data);
-		this.setColor(`LIGHT_BLUE`)
-			.setAuthor(`Roux`, `https://i.imgur.com/NNKJUkI.png`)
-			.setFooter(`Example footer`)
-			.setTimestamp();
+		if (data?.empty !== true) {
+			this.setColor(`LIGHT_BLUE`)
+				.setAuthor(`Roux`, `https://i.imgur.com/NNKJUkI.png`)
+				.setFooter(`Example footer`)
+				.setTimestamp();
+		}
 	}
 
 	public setColor(color: Colors): this;

@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import { DiscordCommand } from "../core/discord/classes/discord-command";
 
-export class DiscordCooldownCommand extends DiscordCommand {
+export class DiscordCooldownTestCommand extends DiscordCommand {
 	constructor() {
 		super(`cooldown`, {
 			aliases: [`cd`],

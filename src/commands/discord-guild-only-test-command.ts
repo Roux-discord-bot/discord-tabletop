@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 import { DiscordCommand } from "../core/discord/classes/discord-command";
 
-export class DiscordGuildOnlyCommand extends DiscordCommand {
+export class DiscordGuildOnlyTestCommand extends DiscordCommand {
 	constructor() {
 		super(`guild`, {
 			aliases: [`go`, `guildOnly`],

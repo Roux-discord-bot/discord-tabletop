@@ -23,13 +23,10 @@
 		"target": "ES6",
 		"typeRoots": ["node_modules/@types", "node_modules/@types/", "types"],
 		"lib": ["ESNext", "ES2019"],
-		"types": ["node", "jest"],
+		"types": ["node"],
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
-		"plugins": [
-			{ "transform": "ts-auto-mock/transformer", "cacheBetweenTests": false }
-		]
 	},
-	"include": ["./src/**/*.ts", "./config.ts", "./jest.config.js"],
+	"include": ["./src/**/*.ts"],
 	"exclude": ["./src/**/*.spec.ts"]
 }

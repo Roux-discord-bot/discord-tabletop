@@ -3,7 +3,7 @@
 	"author": "Thomas 'Roux' Raverdy",
 	"license": "MIT",
 	"version": "1.0.0",
-	"homepage": "https://github.com/Roux-corp/discord-roux#readme",
+	"homepage": "https://github.com/Roux-corp/discord-bot-template#readme",
 	"description": "A simple Typescript discord bot",
 	"engines": {
 		"node": ">=12.18.3"

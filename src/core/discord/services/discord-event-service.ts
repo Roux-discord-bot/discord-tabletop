@@ -13,16 +13,20 @@ export class DiscordEventService {
 		return DiscordEventService._instance;
 	}
 
-	public readonly repository = new DiscordEventRepository();
+	private _repository = new DiscordEventRepository();
 
 	public async init(events: string): Promise<void> {
-		return this.repository
-			.build(events)
-			.then(() => {
-				this.repository.registerDiscordEvent(new DiscordLogEvent());
+		return DiscordEventRepository.build(events)
+			.then(repository => {
+				this._repository = repository;
 			})
-			.then(() => {
-				this.repository.registerDiscordEvent(new DiscordCommandErrorEvent());
-			});
+			.then(() => this._repository.registerDiscordEvent(new DiscordLogEvent()))
+			.then(() =>
+				this._repository.registerDiscordEvent(new DiscordCommandErrorEvent())
+			);
+	}
+
+	public get repository(): DiscordEventRepository {
+		return this._repository;
 	}
 }

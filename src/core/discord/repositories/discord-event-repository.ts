@@ -1,57 +1,22 @@
-import { getInstancesFromFolder } from "../../functions/recursive-get-classes-dir";
 import { DiscordEvent } from "../classes/discord-event";
 import { Repository } from "../../classes/repository";
-import { LoggerService } from "../../utils/logger/logger-service";
-import { DiscordClientService } from "../services/discord-client-service";
-import { DiscordClient } from "../classes/discord-client";
+import { DiscordEventRepositoryBuilder } from "./discord-event-repository-builder";
 
 export class DiscordEventRepository extends Repository<DiscordEvent> {
-	private _isBuilt = false;
+	private _builder = new DiscordEventRepositoryBuilder();
 
-	private _client!: DiscordClient;
-
-	public async build(eventsPath: string): Promise<void> {
-		if (this._isBuilt) throw new Error(`A Repository can only be built once !`);
-		return getInstancesFromFolder<DiscordEvent>(eventsPath).then(
-			async discordEvents => {
-				this._client = DiscordClientService.INSTANCE.client;
-				return this._registerEachDiscordEvent(discordEvents).then(() => {
-					this._isBuilt = true;
-				});
-			}
-		);
+	public static async build(
+		eventsPath: string
+	): Promise<DiscordEventRepository> {
+		const builder = new DiscordEventRepositoryBuilder();
+		return builder.build(eventsPath).then(repository => {
+			// eslint-disable-next-line no-param-reassign
+			repository._builder = builder;
+			return repository;
+		});
 	}
 
 	public async registerDiscordEvent(discordEvent: DiscordEvent): Promise<void> {
-		if (!this._isBuilt)
-			throw new Error(
-				`The repository needs to be built before being fully available !`
-			);
-		return this._registerDiscordEvent(discordEvent);
-	}
-
-	private async _registerEachDiscordEvent(
-		discordEvents: DiscordEvent[]
-	): Promise<void> {
-		return new Promise((resolve, reject) => {
-			discordEvents.forEach(discordEvent => {
-				this._registerDiscordEvent(discordEvent).catch(reject);
-			});
-			resolve();
-		});
-	}
-
-	private async _registerDiscordEvent(
-		discordEvent: DiscordEvent
-	): Promise<void> {
-		if (!this._client)
-			throw new Error(`The Client in the respository is undefined !`);
-		discordEvent.buildEventsForClient(this._client).then(() => {
-			this.add(discordEvent);
-			LoggerService.INSTANCE.info({
-				context: `DiscordEventRepository`,
-				message: `${discordEvent.constructor.name} successfully assigned to the Discord client`,
-			});
-		});
+		return this._builder._registerDiscordEvent(discordEvent);
 	}
 }

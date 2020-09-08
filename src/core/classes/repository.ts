@@ -1,17 +1,21 @@
 export abstract class Repository<T> {
 	private _data: Array<T> = [];
 
+	public constructor(data?: Array<T>) {
+		if (data) this._data = data;
+	}
+
+	protected add(value: T): Repository<T> {
+		this._data.push(value);
+		return this;
+	}
+
 	public all(): ReadonlyArray<T> {
 		return this._data;
 	}
 
 	public get length(): number {
 		return this._data.length;
-	}
-
-	protected add(value: T): Repository<T> {
-		this._data.push(value);
-		return this;
 	}
 
 	public includes(value: T): boolean {

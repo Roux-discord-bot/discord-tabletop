@@ -22,7 +22,7 @@ export class DiscordCommandService {
 		callname: string,
 		...args: string[]
 	): Promise<void> {
-		const command = this.repository.getCommand(callname);
+		const command = this._repository.getCommand(callname);
 		this._canBeExecuted(message, command).then(async condition => {
 			if (condition && command) await command.executeCommand(message, ...args);
 		});
@@ -40,7 +40,7 @@ export class DiscordCommandService {
 			await this._emit(`guildOnlyInDm`, message, command);
 			return false;
 		}
-		if (this.repository.isCommandOnCooldown(command, message)) {
+		if (this._repository.isCommandOnCooldown(command, message)) {
 			await this._emit(`commandInCooldown`, message, command);
 			return false;
 		}
@@ -67,13 +67,21 @@ export class DiscordCommandService {
 		return command.isGuildOnly() && message.guild === null;
 	}
 
-	public readonly repository = new DiscordCommandRepository();
+	private _repository = new DiscordCommandRepository();
 
 	public async init(commands: string): Promise<void> {
-		return this.repository.build(commands).then(() => {
-			DiscordEventService.INSTANCE.repository.registerDiscordEvent(
-				new DiscordMessageEvent()
+		return DiscordCommandRepository.build(commands)
+			.then(repository => {
+				this._repository = repository;
+			})
+			.then(() =>
+				DiscordEventService.INSTANCE.repository.registerDiscordEvent(
+					new DiscordMessageEvent()
+				)
 			);
-		});
+	}
+
+	public get repository(): DiscordCommandRepository {
+		return this._repository;
 	}
 }

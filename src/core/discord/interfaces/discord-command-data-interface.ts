@@ -8,6 +8,7 @@ export type CommandArgument = {
 export interface IDiscordCommandData {
 	name: string;
 	description: string;
+	usage: string;
 	aliases: string[];
 	guildOnly: boolean;
 	cooldown: number;

@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, TextChannel, DMChannel, User, NewsChannel } from "discord.js";
 import { Utils } from "../../utils/utils";
 import {
 	CommandArgument,
@@ -7,6 +7,16 @@ import {
 import { DiscordCommandService } from "../services/discord-command-service";
 
 type DiscordCommandData = IDiscordCommandData & { command: string };
+
+type NoticeOptions = {
+	noticeChannel: TextChannel | DMChannel | NewsChannel;
+
+	/**
+	 * If > 0, the notice will be deleted after given timeout (in seconds)
+	 * @default 3 seconds
+	 */
+	noticeTimeout?: number;
+};
 
 export abstract class DiscordCommand {
 	protected readonly _commandService: DiscordCommandService;
@@ -21,6 +31,7 @@ export abstract class DiscordCommand {
 			name: command[0].toUpperCase() + command.slice(1),
 			command,
 			description: ``,
+			usage: ``,
 			aliases: [],
 			guildOnly: false,
 			cooldown: 1,
@@ -62,10 +73,49 @@ export abstract class DiscordCommand {
 		return Utils.removeElementsFromArray(args, index, supplementaryElements);
 	}
 
+	protected async sendUsageError(
+		message: Message,
+		command: DiscordCommand,
+		details?: string
+	): Promise<Message> {
+		let usageMessage = `There was an error using ${command.name}.`;
+		if (details) usageMessage += `\n${details}`;
+		usageMessage += `\nThe correct usage would be : \n\t${command.data.usage}`;
+		return message.channel.send(usageMessage);
+	}
+
+	protected async notify(
+		notifyChannel: User | TextChannel | DMChannel,
+		timeout: number,
+		content: string,
+		options?: NoticeOptions
+	): Promise<void> {
+		setTimeout(() => {
+			notifyChannel.send(
+				`You were asked to be notified after ${timeout} seconds about : \n${content}`
+			);
+		}, timeout * 1000);
+		if (options && options.noticeChannel) {
+			const {
+				noticeChannel,
+				noticeTimeout = options.noticeTimeout || 3,
+			} = options;
+			await noticeChannel
+				.send(
+					`You will be notified in ${timeout} second(s).` +
+						`\n(This message will delete itself in a few seconds)`
+				)
+				.then(notificationNotice => {
+					if (noticeTimeout > 0)
+						notificationNotice.delete({ timeout: noticeTimeout * 1000 });
+				});
+		}
+	}
+
 	protected abstract async handleCommand(
 		message: Message,
 		...args: string[]
-	): Promise<void>;
+	): Promise<unknown>;
 
 	public hasArgument(name: string): boolean {
 		return this.getArgument(name) !== undefined;

@@ -2,7 +2,7 @@ import { Message, User } from "discord.js";
 import _ from "lodash";
 import { DiscordEmbed } from "../core/discord/classes/discord-embed";
 import { DiscordEmojis } from "../core/utils/constants";
-import { DiscordUtils, mention } from "../core/discord/utils/discord-utils";
+import { DiscordUtils } from "../core/discord/utils/discord-utils";
 import { DiscordCommand } from "../core/discord/classes/discord-command";
 
 export class DiscordVoteCommand extends DiscordCommand {
@@ -71,13 +71,7 @@ export class DiscordVoteCommand extends DiscordCommand {
 		timeout: number
 	): Promise<void> {
 		const link = DiscordUtils.getLinkTo(message);
-		setTimeout(() => {
-			author.send(
-				`${mention(
-					author
-				)} you were asked to be notified after ${timeout} seconds about : \n${link}`
-			);
-		}, timeout * 1000);
+		return this.notify(author, timeout, link);
 	}
 
 	private _notifyArgumentIsValid(message: Message, args: string[]): boolean {

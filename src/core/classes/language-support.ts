@@ -6,6 +6,7 @@ import { UnknownObject } from "../utils/types";
 export type LangOptions = {
 	locale: string;
 };
+
 export const DEFAULT_LANGUAGE = `en`;
 
 export const DEFAULT_OPTIONS: LangOptions = {

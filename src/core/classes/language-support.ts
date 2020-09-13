@@ -3,14 +3,13 @@ import fs from "fs";
 import { LoggerService } from "../utils/logger/logger-service";
 import { UnknownObject } from "../utils/types";
 
+export type LangOptions = {
+	locale: string;
+};
 export const DEFAULT_LANGUAGE = `en`;
 
 export const DEFAULT_OPTIONS: LangOptions = {
 	locale: DEFAULT_LANGUAGE,
-};
-
-export type LangOptions = {
-	locale: string;
 };
 
 export class LanguageSupport {

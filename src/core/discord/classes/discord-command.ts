@@ -5,6 +5,7 @@ import {
 	IDiscordCommandData,
 } from "../interfaces/discord-command-data-interface";
 import { DiscordCommandService } from "../services/discord-command-service";
+import { DiscordEmbed } from "./discord-embed";
 
 type DiscordCommandData = IDiscordCommandData & { command: string };
 
@@ -78,10 +79,12 @@ export abstract class DiscordCommand {
 		command: DiscordCommand,
 		details?: string
 	): Promise<Message> {
-		let usageMessage = `There was an error using ${command.name}.`;
-		if (details) usageMessage += `\n${details}`;
-		usageMessage += `\nThe correct usage would be : \n\t${command.data.usage}`;
-		return message.channel.send(usageMessage);
+		const embed = new DiscordEmbed()
+			.setColor(`DARK_ORANGE`)
+			.setTitle(`There was an error using the command ${command.name}.`);
+		if (details) embed.addField(`Details : `, details);
+		embed.addField(`Usage : `, command.data.usage);
+		return message.channel.send(embed);
 	}
 
 	protected async notify(
